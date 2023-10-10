@@ -23,6 +23,4 @@ def create_app():
     with app.app_context():
         db.create_all()
 
-    app.config.setdefault('DB_POPULATED', False)
-
     return app

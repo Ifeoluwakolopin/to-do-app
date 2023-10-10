@@ -1,11 +1,13 @@
-from backend import create_app
+from backend import create_app, db
 from backend.mock import populate_db
+from backend.models import TodoList
 
 app = create_app()
 
-if not app.config['DB_POPULATED']:
-    populate_db()
-    app.config['DB_POPULATED'] = True
+with app.app_context():
+    if not TodoList.query.first():
+        # No records found, likely an empty database
+        populate_db()
 
 if __name__ == "__main__":
     app.run(debug=True)
