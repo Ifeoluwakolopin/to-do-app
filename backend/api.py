@@ -1,18 +1,21 @@
 from flask import Blueprint, request, jsonify
 from .models import db, TodoList, TodoItem
 
+# create a blueprint for the main API
 main_api = Blueprint('main', __name__)
 
-# TODO Lists
+# Get all Todo lists
 @main_api.route('/lists', methods=['GET'])
 def get_all_lists():
     """Get all TODO lists"""
+    # get all the lists from the database and serialize them
     lists = [l.serialize() for l in TodoList.query.all()]
     return jsonify(lists), 200
 
 @main_api.route('/lists', methods=['POST'])
 def create_list():
     """Create a new TODO list"""
+    # get the data from the request and create a new list
     data = request.json
     new_list = TodoList(title=data['title'], owner_id=data.get('owner_id'))
     db.session.add(new_list)
@@ -22,12 +25,14 @@ def create_list():
 @main_api.route('/lists/<int:id>', methods=['GET'])
 def get_list(id):
     """Get a specific TODO list by ID"""
+    # get the list with the given ID from the database and serialize it
     todo_list = TodoList.query.get_or_404(id)
     return jsonify(todo_list.serialize()), 200
 
 @main_api.route('/lists/<int:id>', methods=['PUT'])
 def update_list(id):
     """Update a TODO list by ID"""
+    # get the list with the given ID from the database, update its title, and commit the changes
     todo_list = TodoList.query.get_or_404(id)
     data = request.json
     todo_list.title = data['title']
@@ -37,6 +42,7 @@ def update_list(id):
 @main_api.route('/lists/<int:id>', methods=['DELETE'])
 def delete_list(id):
     """Delete a TODO list by ID"""
+    # get the list with the given ID from the database and delete it
     todo_list = TodoList.query.get_or_404(id)
     db.session.delete(todo_list)
     db.session.commit()
@@ -46,15 +52,18 @@ def delete_list(id):
 @main_api.route('/items', methods=['GET'])
 def get_all_items():
     """Get all TODO items"""
+    # get all the items from the database and serialize them
     items = [i.serialize() for i in TodoItem.query.all()]
     return jsonify(items), 200
 
 @main_api.route('/items', methods=['POST'])
 def create_item():
     """Create a new TODO item"""
+    # get the data from the request and create a new item
     data = request.json
     parent_item = TodoItem.query.get(data.get('parent_id')) if data.get('parent_id') else None
     
+    # check if the maximum depth level has been reached
     if parent_item and parent_item.depth >= 3:
         return jsonify({"error": "Maximum depth level reached. Cannot add more sub-items."}), 400
     
@@ -70,17 +79,27 @@ def create_item():
 @main_api.route('/items/<int:id>', methods=['GET'])
 def get_item(id):
     """Get a specific TODO item by ID"""
+    # get the item with the given ID from the database and serialize it
     item = TodoItem.query.get_or_404(id)
     return jsonify(item.serialize()), 200
 
 @main_api.route('/items/<int:id>', methods=['PUT'])
 def update_item(id):
-    """Update a TODO item by ID"""
+    """
+    Update a TODO item by ID.
+
+    Args:
+        id (int): The ID of the item to update.
+
+    Returns:
+        tuple: A tuple containing the updated item as a JSON object and a status code.
+    """
+    # get the item with the given ID from the database, update its content and parent item, and commit the changes
     item = TodoItem.query.get_or_404(id)
     data = request.json
 
-    # Ensure depth constraints are maintained
-    parent_item = TodoItem.query.get(data.get('parent_id')) if data.get('parent_id') else None
+    # check if the new parent item violates the depth constraints
+    parent_item = db.session.get(TodoItem, data.get('parent_id')) if data.get('parent_id') else None
     if parent_item and parent_item.depth >= 3:
         return jsonify({"error": "Cannot move item to this depth level."}), 400
 
@@ -97,8 +116,18 @@ def update_item(id):
 
 @main_api.route('/items/<int:id>', methods=['DELETE'])
 def delete_item(id):
-    """Delete a TODO item by ID"""
-    item = TodoItem.query.get_or_404(id)
+    """Delete a Todo item by ID.
+
+    Args:
+        id (int): The ID of the Todo item to be deleted.
+
+    Returns:
+        tuple: A tuple containing a JSON response and a status code.
+            The JSON response contains a message indicating whether the item was deleted successfully or not.
+            The status code is 200 if the item was deleted successfully, or an error code otherwise.
+    """
+    # get the item with the given ID from the database and delete it
+    item = db.session.get_or_404(TodoItem, id)
     db.session.delete(item)
     db.session.commit()
     return jsonify({"message": "Item deleted successfully"}), 200
