@@ -1,5 +1,5 @@
 .venv
 .env
 __pycache__/
-.sqlite
-.sqlite3
+*.sqlite
+*.sqlite3

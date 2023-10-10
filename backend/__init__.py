@@ -11,16 +11,18 @@ def create_app():
     CORS(app)
 
     # configure the database
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite'
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite3'
 
     # initialize the database
     db.init_app(app)
 
     # import the blueprint and register it on the app
-    from .app import main
-    app.register_blueprint(main)
+    from .api import main_api
+    app.register_blueprint(main_api)
 
     with app.app_context():
         db.create_all()
+
+    app.config.setdefault('DB_POPULATED', False)
 
     return app
