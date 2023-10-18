@@ -1,5 +1,10 @@
+import Container from "react-bootstrap/esm/Container";
+import Header from "./components/Header";
+
 export default function App() {
   return (
-    <h1>To-do List</h1>
+    <Container fluid className="App">
+      <Header />
+    </Container>
   );
 }
