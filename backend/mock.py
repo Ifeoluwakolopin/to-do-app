@@ -1,16 +1,21 @@
 import random
 from . import db, create_app  # adjust the import as per your directory structure
-from .models import User, TodoList, TodoItem  # adjust the import as per your directory structure
+from .models import (
+    User,
+    TodoList,
+    TodoItem,
+)  # adjust the import as per your directory structure
 from faker import Faker
 
 fake = Faker()
 
 # Define some settings for the mock data generation
-NUM_USERS = 10
+NUM_USERS = 2
 MAX_LISTS_PER_USER = 2
-MAX_ITEMS_PER_LIST = 5
+MAX_ITEMS_PER_LIST = 2
 MAX_SUBITEMS_PER_ITEM = 2
 MAX_SUBSUBITEMS_PER_SUBITEM = 2
+
 
 def create_random_user():
     user = User(
@@ -19,23 +24,20 @@ def create_random_user():
     user.set_password(fake.password())
     return user
 
+
 def create_random_todo_list(user):
-    todo_list = TodoList(
-        title=fake.sentence(nb_words=3),
-        owner_id=user.id
-    )
+    todo_list = TodoList(title=fake.sentence(nb_words=3), owner_id=user.id)
     return todo_list
+
 
 def create_random_todo_item(list_id, parent_id=None):
     item = TodoItem(
-        content=fake.sentence(nb_words=5),
-        list_id=list_id,
-        parent_id=parent_id
+        content=fake.sentence(nb_words=5), list_id=list_id, parent_id=parent_id
     )
     return item
 
-def populate_db():
 
+def populate_db():
     print("Database populated with mock data!")
 
     # Create random users
