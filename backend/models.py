@@ -1,9 +1,12 @@
 from flask import Flask
+from flask_login import UserMixin
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 from . import db
+from . import login_manager
 
-class User(db.Model):
+
+class User(UserMixin, db.Model):
     """
     A class representing a user in the to-do app.
 
@@ -27,7 +30,7 @@ class User(db.Model):
     """
 
     __tablename__ = "users"
-    
+
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String, unique=True, nullable=False)
     password_hash = db.Column(db.String, nullable=False)
@@ -46,16 +49,31 @@ class User(db.Model):
         self.password_hash = generate_password_hash(password)
 
     def check_password(self, password):
-            """
-            Check if the provided password matches the user's password hash.
+        """
+        Check if the provided password matches the user's password hash.
 
-            Args:
-                password (str): The password to check.
+        Args:
+            password (str): The password to check.
 
-            Returns:
-                bool: True if the password matches, False otherwise.
-            """
-            return check_password_hash(self.password_hash, password)
+        Returns:
+            bool: True if the password matches, False otherwise.
+        """
+        return check_password_hash(self.password_hash, password)
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    """
+    Load a user by ID.
+
+    Args:
+        user_id (str): The ID of the user.
+
+    Returns:
+        User: The user with the specified ID or None if not found.
+    """
+    return User.query.get(int(user_id))
+
 
 class TodoList(db.Model):
     """
@@ -77,27 +95,29 @@ class TodoList(db.Model):
     serialize()
         Returns a dictionary representation of the to-do list object.
     """
+
     __tablename__ = "lists"
-    
+
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String, nullable=False)
-    owner_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
+    owner_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=True)
     items = db.relationship("TodoItem", backref="list", lazy="dynamic")
 
     def serialize(self):
-            """
-            Serializes the model instance into a dictionary.
+        """
+        Serializes the model instance into a dictionary.
 
-            Returns:
-                A dictionary containing the serialized model instance.
-            """
-            return {
-                'id': self.id,
-                'title': self.title,
-                'owner_id': self.owner_id,
-                'items': [i.serialize() for i in self.items]
-            }
-    
+        Returns:
+            A dictionary containing the serialized model instance.
+        """
+        return {
+            "id": self.id,
+            "title": self.title,
+            "owner_id": self.owner_id,
+            "items": [i.serialize() for i in self.items],
+        }
+
+
 class TodoItem(db.Model):
     """
     A class representing a to-do item in the application.
@@ -126,36 +146,39 @@ class TodoItem(db.Model):
     add_child(child: TodoItem)
         Adds a child to the to-do item.
     """
+
     __tablename__ = "items"
-    
+
     id = db.Column(db.Integer, primary_key=True)
     content = db.Column(db.String, nullable=False)
     depth = db.Column(db.Integer, default=1)
-    list_id = db.Column(db.Integer, db.ForeignKey('lists.id'), nullable=False)
-    parent_id = db.Column(db.Integer, db.ForeignKey('items.id'), nullable=True)
-    
+    list_id = db.Column(db.Integer, db.ForeignKey("lists.id"), nullable=False)
+    parent_id = db.Column(db.Integer, db.ForeignKey("items.id"), nullable=True)
+
     # Explicit parent-child relationships
-    children = db.relationship('TodoItem', backref=db.backref('parent', remote_side=[id]))
-    
+    children = db.relationship(
+        "TodoItem", backref=db.backref("parent", remote_side=[id])
+    )
+
     def serialize(self):
         """
         Returns a dictionary representation of the to-do item.
         """
         return {
-            'id': self.id,
-            'content': self.content,
-            'depth': self.depth,
-            'list_id': self.list_id,
-            'parent_id': self.parent_id,
-            'children': [i.serialize() for i in self.children]
+            "id": self.id,
+            "content": self.content,
+            "depth": self.depth,
+            "list_id": self.list_id,
+            "parent_id": self.parent_id,
+            "children": [i.serialize() for i in self.children],
         }
-    
+
     def __init__(self, *args, **kwargs):
         """
         Initializes a new to-do item instance.
         """
-        
-        parent_id = kwargs.get('parent_id', None)
+
+        parent_id = kwargs.get("parent_id", None)
         if parent_id:
             parent = db.session.get(TodoItem, parent_id)
             if not parent:
@@ -179,7 +202,9 @@ class TodoItem(db.Model):
         Adds a child to the to-do item.
         """
         if not self.can_have_children():
-            raise ValueError("This item has reached the maximum depth and can't have more children.")
+            raise ValueError(
+                "This item has reached the maximum depth and can't have more children."
+            )
         child.parent = self
         child.parent_id = self.id
         child.depth = self.depth + 1

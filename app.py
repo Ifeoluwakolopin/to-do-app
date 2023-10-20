@@ -1,4 +1,4 @@
-from backend import create_app, db
+from backend import create_app
 from backend.mock import populate_db
 from backend.models import TodoList
 
