@@ -8,7 +8,7 @@ import HomePage from "./pages/HomePage";
 const mockData = [
   {
     id: 1,
-    title: "To Do",
+    title: "Recrutiment Process Empowerment",
     items: [
       {
         id: "task1",
@@ -52,6 +52,86 @@ const mockData = [
             children: []
           }
         ]
+      }
+    ]
+  },
+  {
+    id: 4,
+    title: "New Page Tasks",
+    items: [
+      {
+        id: "task1",
+        content: "Buy groceries",
+        children: []
+      },
+      {
+        id: "task2",
+        content: "Walk the dog",
+        children: []
+      }
+    ]
+  },
+  {
+    id: 4,
+    title: "New Page Tasks",
+    items: [
+      {
+        id: "task1",
+        content: "Buy groceries",
+        children: []
+      },
+      {
+        id: "task2",
+        content: "Walk the dog",
+        children: []
+      }
+    ]
+  },
+  {
+    id: 5,
+    title: "New Page Tasks",
+    items: [
+      {
+        id: "task1",
+        content: "Buy groceries",
+        children: []
+      },
+      {
+        id: "task2",
+        content: "Walk the dog",
+        children: []
+      }
+    ]
+  },
+  {
+    id: 6,
+    title: "New Page Tasks",
+    items: [
+      {
+        id: "task1",
+        content: "Buy groceries",
+        children: []
+      },
+      {
+        id: "task2",
+        content: "Walk the dog",
+        children: []
+      }
+    ]
+  },
+  {
+    id: 7,
+    title: "New Page Tasks",
+    items: [
+      {
+        id: "task1",
+        content: "Buy groceries",
+        children: []
+      },
+      {
+        id: "task2",
+        content: "Walk the dog",
+        children: []
       }
     ]
   }
