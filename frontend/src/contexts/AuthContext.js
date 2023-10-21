@@ -8,7 +8,9 @@ export function useAuth() {
 }
 
 export function AuthProvider({ children }) {
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [isAuthenticated, setIsAuthenticated] = useState(
+        localStorage.getItem('isAuthenticated') === 'true'
+    );
     const [token, setToken] = useState(null); // 1. Add a state for the token
 
     const login = (authToken) => { // 2. Modify the login to accept a token

@@ -9,20 +9,26 @@ import AlertComponent from '../components/Alert';
 export default function LoginPage() {
     const location = useLocation();
     const navigate = useNavigate();
-    const { login } = useAuth();
     const { fetchRequest } = useApi();
 
     const [showAlert, setShowAlert] = useState(false);
     const [alertMessage, setAlertMessage] = useState('');
     const [alertVariant, setAlertVariant] = useState('success');
 
+    const { isAuthenticated, login } = useAuth();
+
     useEffect(() => {
+        if (isAuthenticated) {
+            navigate('/home');
+            return;
+        }
+
         if (location.state?.fromSignup) {
             setAlertMessage('Account created successfully. Login now.');
             setAlertVariant('success');
             setShowAlert(true);
         }
-    }, [location.state]);
+    }, [isAuthenticated, navigate, location.state]);
 
     const handleLogin = async (event) => {
         event.preventDefault();
@@ -35,8 +41,8 @@ export default function LoginPage() {
             const response = await fetchRequest('/login', 'POST', user);
     
             if (response.status && response.status === 200) {
-                console.log("Logged IN")
                 login();
+                localStorage.setItem('isAuthenticated', 'true');
                 navigate('/home');
             } else {
                 setAlertVariant('danger');

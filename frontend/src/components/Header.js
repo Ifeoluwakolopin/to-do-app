@@ -1,4 +1,5 @@
 import { Navbar, Nav, Button, Container } from 'react-bootstrap';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
@@ -11,6 +12,8 @@ export default function Header() {
         if (confirmLogout) {
             try {
                 await logout();
+                // Remove authentication state from local storage
+                localStorage.removeItem('isAuthenticated');
                 navigate('/');  // Redirect to homepage
             } catch (error) {
                 console.error("Failed to log out:", error);
@@ -21,7 +24,7 @@ export default function Header() {
     return (
         <Navbar bg="dark" sticky="top" className="Header">
             <Container fluid>
-                <Navbar.Brand href="/" style={{ color: 'white' }}>ToDo App</Navbar.Brand>
+                <Navbar.Brand as={Link} to="/" style={{ color: 'white' }}>ToDo App</Navbar.Brand>
                 <Nav className="ml-auto">
                     {isAuthenticated ? (
                         <Button variant="outline-info" onClick={handleLogout}>
