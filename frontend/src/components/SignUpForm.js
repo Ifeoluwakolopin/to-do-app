@@ -1,9 +1,7 @@
 import { Form, Button, Container } from 'react-bootstrap';
-import Body from './Body';
 
 export default function SignUpForm({ onSignUp }) {
     return (
-        <Body>
             <Container className="mt-5">
                 <h2 className="mb-4">Sign Up</h2>
                 <Form onSubmit={onSignUp}>
@@ -27,6 +25,5 @@ export default function SignUpForm({ onSignUp }) {
                     </Button>
                 </Form>
             </Container>
-        </Body>
     );
 };

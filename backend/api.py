@@ -167,7 +167,7 @@ def signup():
     # Check if user already exists
     user = User.query.filter_by(username=username).first()
     if user:
-        return jsonify({"message": "Username already taken"}), 400
+        return jsonify({"message": "Username already taken"}), 409
 
     # Create new user and add to database
     new_user = User(username=username)

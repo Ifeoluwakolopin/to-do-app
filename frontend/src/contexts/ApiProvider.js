@@ -1,4 +1,4 @@
-import  { createContext, useContext } from 'react';
+import { createContext, useContext } from 'react';
 
 const ApiContext = createContext();
 
@@ -8,7 +8,7 @@ export function useApi() {
 
 const API_BASE_URL = 'http://127.0.0.1:5000';
 
-function fetchRequest(endpoint, method = 'GET', body, token) {  // Re-add the token parameter
+function fetchRequest(endpoint, method = 'GET', body, token) {
 
     const headers = {
         'Content-Type': 'application/json',
@@ -24,14 +24,11 @@ function fetchRequest(endpoint, method = 'GET', body, token) {  // Re-add the to
 
     return fetch(`${API_BASE_URL}${endpoint}`, config)
         .then(response => {
-            // First, check if the request was successful based on the status code
-            if (response.status >= 200 && response.status < 300) {
-                // Return the parsed JSON if request was successful
-                return response.json();
-            } else {
-                // If request failed, reject the promise with the status code
-                throw response.status;
-            }
+            return response.json()
+                .then(data => ({
+                    data: data,
+                    status: response.status
+                }));
         });
 }
 
