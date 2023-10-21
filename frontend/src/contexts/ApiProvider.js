@@ -8,7 +8,7 @@ export function useApi() {
 
 const API_BASE_URL = 'http://127.0.0.1:5000';
 
-function fetchRequest(endpoint, method = 'GET', body, token) {
+export function fetchRequest(endpoint, method = 'GET', body, token) {
 
     const headers = {
         'Content-Type': 'application/json',

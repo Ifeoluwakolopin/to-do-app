@@ -1,4 +1,5 @@
 import { createContext, useContext, useState } from 'react';
+import { fetchRequest } from './ApiProvider';
 
 const AuthContext = createContext();
 
@@ -15,9 +16,19 @@ export function AuthProvider({ children }) {
         setToken(authToken);
     };
 
-    const logout = () => {
+    const authLogout = () => {
         setIsAuthenticated(false);
-        setToken(null); // 3. Reset the token on logout
+        setToken(null);
+    };
+
+    const logout = async () => {
+        try {
+            await fetchRequest('/logout', 'POST');
+            authLogout();
+        } catch (error) {
+            console.error("Failed to log out:", error);
+            throw error;
+        }
     };
 
     return (

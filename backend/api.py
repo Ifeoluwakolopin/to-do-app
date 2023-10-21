@@ -197,7 +197,6 @@ def login():
 
 # Logout
 @main_api.route("/logout", methods=["POST"])
-@login_required
 def logout():
     logout_user()
     return jsonify({"message": "Logged out successfully"}), 200
