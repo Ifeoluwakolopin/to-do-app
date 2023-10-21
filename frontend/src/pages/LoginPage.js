@@ -10,12 +10,11 @@ export default function LoginPage() {
     const location = useLocation();
     const navigate = useNavigate();
     const { fetchRequest } = useApi();
+    const { isAuthenticated, login } = useAuth();
 
     const [showAlert, setShowAlert] = useState(false);
     const [alertMessage, setAlertMessage] = useState('');
     const [alertVariant, setAlertVariant] = useState('success');
-
-    const { isAuthenticated, login } = useAuth();
 
     useEffect(() => {
         if (isAuthenticated) {
@@ -35,28 +34,28 @@ export default function LoginPage() {
     
         const username = event.target[0].value;
         const password = event.target[1].value;
-        const user = { username, password };
     
         try {
-            const response = await fetchRequest('/login', 'POST', user);
-    
-            if (response.status && response.status === 200) {
+            const { data, status } = await fetchRequest('/login', 'POST', { username, password });
+            
+            if (status === 200) {
                 login();
                 localStorage.setItem('isAuthenticated', 'true');
                 navigate('/home');
             } else {
                 setAlertVariant('danger');
-                setAlertMessage(response.message || 'Login failed. Please check your credentials.');
+                // The API provides a message in its response, so we're leveraging that.
+                setAlertMessage(data.message || 'Login failed. Please check your credentials.');
                 setShowAlert(true);
             }
         } catch (error) {
-            const errorMessage = error.data?.message || 'Failed to login. Please try again later.';
             setAlertVariant('danger');
-            setAlertMessage(errorMessage);
+            setAlertMessage('Failed to login. Please try again later.');
             setShowAlert(true);
         }
     };
     
+
     return (
         <Body>
             <AlertComponent
@@ -68,4 +67,4 @@ export default function LoginPage() {
             <LoginForm onLogin={handleLogin} />
         </Body>
     );
-};
+}

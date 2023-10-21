@@ -11,22 +11,15 @@ export function AuthProvider({ children }) {
     const [isAuthenticated, setIsAuthenticated] = useState(
         localStorage.getItem('isAuthenticated') === 'true'
     );
-    const [token, setToken] = useState(null); // 1. Add a state for the token
 
-    const login = (authToken) => { // 2. Modify the login to accept a token
+    const login = () => {
         setIsAuthenticated(true);
-        setToken(authToken);
-    };
-
-    const authLogout = () => {
-        setIsAuthenticated(false);
-        setToken(null);
     };
 
     const logout = async () => {
         try {
             await fetchRequest('/logout', 'POST');
-            authLogout();
+            setIsAuthenticated(false);
         } catch (error) {
             console.error("Failed to log out:", error);
             throw error;
@@ -34,7 +27,7 @@ export function AuthProvider({ children }) {
     };
 
     return (
-        <AuthContext.Provider value={{ isAuthenticated, login, logout, token }}>
+        <AuthContext.Provider value={{ isAuthenticated, login, logout }}>
             {children}
         </AuthContext.Provider>
     );

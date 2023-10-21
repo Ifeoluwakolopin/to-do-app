@@ -27,13 +27,8 @@ export default function SignUpPage() {
             return;
         }
 
-        const user = {
-            username,
-            password
-        };
-
         try {
-            const response = await fetchRequest('/signup', 'POST', user);
+            const response = await fetchRequest('/signup', 'POST', { username, password });
 
             if (response.status === 201) {
                 navigate('/login', { state: { fromSignup: true } });
@@ -43,17 +38,14 @@ export default function SignUpPage() {
                 setShowAlert(true);
             } else {
                 setAlertVariant('danger');
-                setAlertMessage(response.message || 'Failed to register. Please try again later.');
+                setAlertMessage(response.data.message || 'Failed to register. Please try again later.');
                 setShowAlert(true);
             }
-
         } catch (error) {
-                // Handle unexpected issues
-                setAlertVariant('danger');
-                setAlertMessage('An unexpected error occurred. Please try again later.');
-                setShowAlert(true);
-            }
-
+            setAlertVariant('danger');
+            setAlertMessage('An unexpected error occurred. Please try again later.');
+            setShowAlert(true);
+        }
     };
 
     return (
