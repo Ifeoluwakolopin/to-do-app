@@ -2,10 +2,10 @@ import unittest
 from backend import create_app, db
 from backend.models import TodoItem, TodoList
 
-class BaseTestCase(unittest.TestCase):
 
+class BaseTestCase(unittest.TestCase):
     def setUp(self):
-        self.app = create_app('testing')
+        self.app = create_app("testing")
         self.client = self.app.test_client()
         self.app_context = self.app.app_context()
         self.app_context.push()
@@ -16,15 +16,17 @@ class BaseTestCase(unittest.TestCase):
         db.drop_all()
         self.app_context.pop()
 
-class TestTodoItem(BaseTestCase):
 
+class TestTodoItem(BaseTestCase):
     def setUp(self):
         super().setUp()
         self.item1 = TodoItem(content="Buy groceries", list_id=1)
         db.session.add(self.item1)
         db.session.commit()
 
-        self.item2 = TodoItem(content="Clean the house", list_id=1, parent_id=self.item1.id)
+        self.item2 = TodoItem(
+            content="Clean the house", list_id=1, parent_id=self.item1.id
+        )
         db.session.add(self.item2)
         db.session.commit()
 
@@ -35,30 +37,30 @@ class TestTodoItem(BaseTestCase):
     def test_serialize(self):
         # Use the items created in setUp method for the serialization test
         expected = {
-            'id': self.item1.id,
-            'content': 'Buy groceries',
-            'depth': 1,
-            'list_id': 1,
-            'parent_id': None,
-            'children': [
+            "id": self.item1.id,
+            "content": "Buy groceries",
+            "depth": 1,
+            "list_id": 1,
+            "parent_id": None,
+            "children": [
                 {
-                    'id': self.item2.id,
-                    'content': 'Clean the house',
-                    'depth': 2,
-                    'list_id': 1,
-                    'parent_id': self.item1.id,
-                    'children': [
+                    "id": self.item2.id,
+                    "content": "Clean the house",
+                    "depth": 2,
+                    "list_id": 1,
+                    "parent_id": self.item1.id,
+                    "children": [
                         {
-                            'id': self.item3.id,
-                            'content': 'Do laundry',
-                            'depth': 3,
-                            'list_id': 1,
-                            'parent_id': self.item2.id,
-                            'children': []
+                            "id": self.item3.id,
+                            "content": "Do laundry",
+                            "depth": 3,
+                            "list_id": 1,
+                            "parent_id": self.item2.id,
+                            "children": [],
                         }
-                    ]
+                    ],
                 }
-            ]
+            ],
         }
 
         self.assertEqual(self.item1.serialize(), expected)
@@ -67,7 +69,6 @@ class TestTodoItem(BaseTestCase):
         self.assertTrue(self.item1.can_have_children())
         self.assertTrue(self.item2.can_have_children())
         self.assertFalse(self.item3.can_have_children())
-
 
     def test_add_child(self):
         child = TodoItem(content="Buy milk", list_id=1)
@@ -79,9 +80,7 @@ class TestTodoItem(BaseTestCase):
         self.assertIn(child, self.item1.children)
 
 
-
 class TestTodoList(BaseTestCase):
-
     def setUp(self):
         super().setUp()
         self.list1 = TodoList(title="Groceries", owner_id=1)
@@ -91,10 +90,10 @@ class TestTodoList(BaseTestCase):
 
     def test_serialize(self):
         expected = {
-            'id': self.list1.id,
-            'title': 'Groceries',
-            'owner_id': 1,
-            'items': []
+            "id": self.list1.id,
+            "title": "Groceries",
+            "owner_id": 1,
+            "items": [],
         }
         self.assertEqual(self.list1.serialize(), expected)
 
