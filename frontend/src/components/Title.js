@@ -24,8 +24,11 @@ export default function Title({ initialTitle, onSave, endpoint }) {
     };
 
     const titleTooltip = (
-        <Tooltip id="title-tooltip">Click to edit title</Tooltip>
+        <Tooltip id="title-tooltip" style={{ fontSize: '12px' }}>
+            Click to edit title
+        </Tooltip>
     );
+    
 
     return (
         <>

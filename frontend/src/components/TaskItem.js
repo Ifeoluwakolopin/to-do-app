@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Card, Button } from 'react-bootstrap';
 import TaskActions from './TaskActions'; 
 import { BsChevronDown, BsChevronUp } from 'react-icons/bs';
@@ -7,28 +7,37 @@ import { useApi } from '../contexts/ApiProvider'; // Import the API context
 
 export default function TaskItem({ item, listId }) {
     const [showSubtasks, setShowSubtasks] = useState(false);
+    const [isEditing, setIsEditing] = useState(false);
+    const [newTitle, setNewTitle] = useState(item.content);
+    const inputRef = useRef(null);
     const { fetchRequest } = useApi(); // Use the fetchRequest function from the API context
 
-    const updateTaskTitle = async (newTitle) => {
+    const updateTaskTitle = async () => {
         try {
-            // Include listId in the payload if needed
             const payload = {
                 content: newTitle,
-                list_id: listId, // Include the listId if necessary
+                list_id: listId,
             };
-    
-            // Make a PUT request to update the task title
+
             const response = await fetchRequest(`/items/${item.id}`, 'PUT', payload);
-    
+
             if (response.status === 200) {
-                // Title updated successfully
+                setIsEditing(false);
+                if (inputRef.current) {
+                    inputRef.current.blur();
+                }
             } else {
-                // Handle error response from the API
                 console.error('Failed to update task title:', response.data.message);
             }
         } catch (error) {
-            // Handle network or other errors
             console.error('An error occurred while updating task title:', error);
+        }
+    };
+
+    const handleKeyDown = (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            updateTaskTitle();
         }
     };
 
@@ -38,8 +47,12 @@ export default function TaskItem({ item, listId }) {
                 <Card.Body className="d-flex justify-content-between align-items-center py-2">
                     <Title
                         initialTitle={item.content}
-                        onSave={updateTaskTitle} // Pass the updateTaskTitle function
-                        endpoint={`/items/${item.id}`} // API endpoint for updating the title
+                        onSave={updateTaskTitle}
+                        endpoint={`/items/${item.id}`}
+                        isEditing={isEditing} // Pass isEditing to the Title component
+                        setIsEditing={setIsEditing} // Pass setIsEditing to the Title component
+                        inputRef={inputRef} // Pass inputRef to the Title component
+                        type="task" // Pass the type as "task" to Title
                     />
                     <div className="d-flex align-items-center">
                         <TaskActions subtasks={item.children} />
@@ -62,8 +75,11 @@ export default function TaskItem({ item, listId }) {
                             <Card.Body className="d-flex justify-content-between align-items-center py-2">
                                 <Title
                                     initialTitle={child.content}
-                                    onSave={(newTitle) => updateTaskTitle(newTitle, child.id)} // Pass the updateTaskTitle function
-                                    endpoint={`/items/${child.id}`} // API endpoint for updating the title
+                                    onSave={updateTaskTitle}
+                                    endpoint={`/items/${child.id}`}
+                                    isEditing={isEditing} // Pass isEditing to the Title component
+                                    setIsEditing={setIsEditing} // Pass setIsEditing to the Title component
+                                    inputRef={inputRef} // Pass inputRef to the Title component
                                 />
                                 <div className="d-flex align-items-center">
                                     <TaskActions subtasks={child.children} />
