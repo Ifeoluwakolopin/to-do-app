@@ -101,7 +101,9 @@ class TodoList(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String, nullable=False)
     owner_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=True)
-    items = db.relationship("TodoItem", backref="list", lazy="dynamic")
+    items = db.relationship(
+        "TodoItem", backref="list", lazy="dynamic", cascade="all, delete-orphan"
+    )
 
     def serialize(self):
         """

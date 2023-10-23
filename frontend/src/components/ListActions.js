@@ -1,27 +1,33 @@
-// ListActions.js
 import React, { useState } from 'react';
 import { BsPlus, BsTrash } from 'react-icons/bs';
 import { OverlayTrigger, Tooltip, Modal, Button } from 'react-bootstrap';
 import AddTask from './AddTask';
 import { useApi } from '../contexts/ApiProvider';
 
-export default function ListActions({ onDelete, listId }) {
+export default function ListActions({ listId, onTaskAdded, onListDeleted }) {
     const [showAddTaskModal, setShowAddTaskModal] = useState(false);
-
     const { fetchRequest } = useApi();
 
     const handleDeleteList = async () => {
+        // Show a confirmation dialog to the user
+        const confirmDelete = window.confirm(
+            'Are you sure you want to delete this list? This will also delete any tasks left on the list.'
+        );
+
+        if (!confirmDelete) {
+            // User canceled the delete operation
+            return;
+        }
+
         try {
             // Perform the delete_list API request
             const response = await fetchRequest(`/delete_list/${listId}`, 'DELETE');
 
             if (response.status === 200) {
-                // List deleted successfully, you can handle this as needed
+                // List deleted successfully
+                onListDeleted(listId);
                 // For example, close the modal if it's open
                 setShowAddTaskModal(false);
-
-                // Call the onDelete function passed as a prop
-                onDelete();
             } else {
                 // Handle error response from the API
                 console.error('Failed to delete list:', response.data.message);
@@ -38,6 +44,11 @@ export default function ListActions({ onDelete, listId }) {
 
     const handleCloseAddTaskModal = () => {
         setShowAddTaskModal(false);
+    };
+
+    const handleTaskAdded = (newTask) => {
+        // Call the parent's onTaskAdded function to update the ListCard
+        onTaskAdded(newTask);
     };
 
     return (
@@ -66,8 +77,9 @@ export default function ListActions({ onDelete, listId }) {
                 </Modal.Header>
                 <Modal.Body>
                     <AddTask
-                        listId={listId} // Pass the listId to AddTask
+                        listId={listId}
                         onClose={handleCloseAddTaskModal}
+                        onTaskAdded={handleTaskAdded} // Pass the function to update ListCard
                     />
                 </Modal.Body>
                 <Modal.Footer>

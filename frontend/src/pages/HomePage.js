@@ -25,7 +25,6 @@ export default function HomePage() {
     }, [fetchRequest]);
 
     const addNewList = (newList) => {
-        console.log('Adding new list:', newList);
         setLists(prevLists => {
             const updatedLists = [...prevLists, newList];
             console.log('Updated lists:', updatedLists);
@@ -33,12 +32,17 @@ export default function HomePage() {
         });
     };
 
+    const handleListDeleted = (deletedListId) => {
+        // Remove the deleted list from the lists state
+        setLists((prevLists) => prevLists.filter((list) => list.id !== deletedListId));
+    };
+
     return (
         <div className="home-page-content">
             <div className="mb-4">
                 <AddList onListAdded={addNewList} />
             </div>
-            <ListCardArea lists={lists} />
+            <ListCardArea lists={lists} onListDeleted={handleListDeleted} /> {/* Corrected prop name */}
         </div>
     );
 }

@@ -1,8 +1,8 @@
-import React, { useState } from 'react'; // No need for useEffect now
+import React, { useState } from 'react';
 import { Container, Row, Col, Button } from 'react-bootstrap';
 import ListCard from '../components/ListCard';
 
-export default function ListCardArea({ lists }) { // Receive lists as a prop
+export default function ListCardArea({ lists, onListDeleted }) {
     const itemsPerPage = 3;
     const [currentPage, setCurrentPage] = useState(0);
 
@@ -26,7 +26,7 @@ export default function ListCardArea({ lists }) { // Receive lists as a prop
             <Row>
                 {lists.slice(startIndex, endIndex).map(list => (
                     <Col key={list.id} sm={12} md={4} className="mb-3">
-                        <ListCard list={list} />
+                        <ListCard list={list} onListDeleted={onListDeleted} />
                     </Col>
                 ))}
             </Row>

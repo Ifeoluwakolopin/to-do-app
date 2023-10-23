@@ -1,13 +1,12 @@
-// ListCard.js
+import React, { useState } from 'react';
 import { Card, ListGroup, Row, Col } from 'react-bootstrap';
 import TaskItem from '../components/TaskItem';
 import ListActions from './ListActions';
 import Title from './Title';
 import { useApi } from '../contexts/ApiProvider';
 
-export default function ListCard({ list }) {
-
-    const items = list.items || [];
+export default function ListCard({ list, onListDeleted }) {
+    const [items, setItems] = useState(list.items || []); // Initialize with list items
 
     const { fetchRequest } = useApi();
 
@@ -21,25 +20,9 @@ export default function ListCard({ list }) {
         }
     };
 
-    const handleDeleteList = async () => {
-        try {
-            // Perform the delete_list API request
-            const response = await fetch(`/delete_list/${list.id}`, {
-                method: 'DELETE',
-            });
-
-            if (response.status === 200) {
-                // List deleted successfully, you can handle this as needed
-                // For example, remove the list from the UI or perform any cleanup
-                console.log('List deleted successfully');
-            } else {
-                // Handle error response from the API
-                console.error('Failed to delete list:', response.data.message);
-            }
-        } catch (error) {
-            // Handle network or other errors
-            console.error('An error occurred:', error);
-        }
+    const handleTaskAdded = (newTask) => {
+        // Update the items state with the new task
+        setItems([...items, newTask]);
     };
 
     return (
@@ -54,9 +37,10 @@ export default function ListCard({ list }) {
                         />
                     </Col>
                     <Col xs="auto">
-                        <ListActions 
-                            onDelete={handleDeleteList} // Pass the handleDeleteList function
+                        <ListActions
                             listId={list.id}
+                            onTaskAdded={handleTaskAdded}
+                            onListDeleted={onListDeleted}
                         />
                     </Col>
                 </Row>
