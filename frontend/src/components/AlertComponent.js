@@ -11,12 +11,10 @@ export default function AlertComponent({ variant = 'success', message, show, onC
         let timer;
         if (show) {
             timer = setTimeout(() => {
-                console.log("Attempting to close the alert.");
                 onClose();
-            }, 3000); // Set to 3 seconds
+            }, 3000);
         }
 
-        // Cleanup the timer to avoid potential issues if the component is unmounted before the timer fires.
         return () => {
             if (timer) {
                 clearTimeout(timer);
