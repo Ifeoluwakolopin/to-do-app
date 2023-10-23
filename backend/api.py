@@ -15,10 +15,12 @@ def get_all_lists():
     return jsonify(lists), 200
 
 
-@main_api.route("/lists", methods=["POST"])
+@main_api.route("/add_list", methods=["POST"])
 @login_required
-def create_list():
+def add_list():
     data = request.json
+    print("Data: ", data)
+    print(current_user.is_authenticated)
     new_list = TodoList(title=data["title"], owner_id=current_user.id)
     db.session.add(new_list)
     db.session.commit()
