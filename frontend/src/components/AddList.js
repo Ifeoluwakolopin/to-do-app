@@ -46,6 +46,12 @@ export default function AddList({ onListAdded }) {
         }
     };
 
+    const handleKeyPress = (e) => {
+        if (e.key === 'Enter') {
+            handleAddList(e);
+        }
+    };
+
     return (
         <div className="add-list mt-4">
             <AlertComponent
@@ -62,6 +68,7 @@ export default function AddList({ onListAdded }) {
                         className="me-2"  // adds margin to the right of the element
                         value={title}
                         onChange={e => setTitle(e.target.value)}
+                        onKeyPress={handleKeyPress} // Add this event handler
                     />
                     <Button variant="outline-secondary" onClick={handleAddList}>
                         <FaPlus />

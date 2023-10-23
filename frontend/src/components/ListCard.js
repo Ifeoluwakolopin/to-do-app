@@ -47,7 +47,7 @@ export default function ListCard({ list, onListDeleted }) {
             </Card.Header>
             <ListGroup variant="flush" className="p-3">
                 {items.map(item => (
-                    <TaskItem key={item.id} item={item} />
+                    <TaskItem key={item.id} item={item} listId={list.id} />
                 ))}
             </ListGroup>
         </Card>
