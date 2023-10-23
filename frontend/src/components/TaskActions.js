@@ -5,26 +5,34 @@ import { OverlayTrigger, Tooltip, Modal, Button } from 'react-bootstrap';
 import AddTask from './AddTask';
 import { useApi } from '../contexts/ApiProvider';
 
-export default function TaskActions({ taskId, listId, onTaskAdded }) {
+export default function TaskActions({ taskId, listId, onTaskAdded, onTaskDeleted }) {
     const [showAddSubtaskModal, setShowAddSubtaskModal] = useState(false);
+    const [deleteConfirmation, setDeleteConfirmation] = useState(false);
     const { fetchRequest } = useApi();
 
     const handleOpenAddSubtaskModal = () => setShowAddSubtaskModal(true);
     const handleCloseAddSubtaskModal = () => setShowAddSubtaskModal(false);
 
-    const handleDeleteTask = async () => {
+    const handleDeleteTaskClick = async () => {
+        if (!deleteConfirmation) {
+            setDeleteConfirmation(true);
+            return;
+        }
+
         try {
             const response = await fetchRequest(`/items/${taskId}`, 'DELETE');
 
             if (response.status === 200) {
-                // Task deleted successfully. (Handle accordingly, like removing from list)
                 console.log('Task deleted successfully');
+                onTaskDeleted(taskId); // Inform the parent component about the deletion
             } else {
                 console.error('Failed to delete task:', response.data.message);
             }
         } catch (error) {
             console.error('An error occurred:', error);
         }
+
+        setDeleteConfirmation(false);  // Reset the delete confirmation mode
     };
 
     return (
@@ -35,8 +43,15 @@ export default function TaskActions({ taskId, listId, onTaskAdded }) {
                 </Button>
             </OverlayTrigger>
 
-            <OverlayTrigger overlay={<Tooltip id="tooltip-delete">Delete Task</Tooltip>}>
-                <Button variant="link" className="btn-sm p-0 text-decoration-none mr-2" onClick={handleDeleteTask}>
+            <OverlayTrigger 
+                overlay={<Tooltip id="tooltip-delete">{deleteConfirmation ? "Confirm Delete?" : "Delete Task"}</Tooltip>}
+            >
+                <Button 
+                    variant="link" 
+                    className={`btn-sm p-0 text-decoration-none mr-2 ${deleteConfirmation ? "text-danger" : ""}`} 
+                    onClick={handleDeleteTaskClick}
+                    onMouseLeave={() => setDeleteConfirmation(false)} // Reset the delete confirmation mode when the mouse leaves the button
+                >
                     <BsTrash />
                 </Button>
             </OverlayTrigger>
@@ -48,7 +63,7 @@ export default function TaskActions({ taskId, listId, onTaskAdded }) {
                 <Modal.Body>
                     <AddTask
                         listId={listId}
-                        parentId={taskId} // Pass taskId as parentId
+                        parentId={taskId} 
                         onTaskAdded={onTaskAdded}
                         onClose={handleCloseAddSubtaskModal}
                     />

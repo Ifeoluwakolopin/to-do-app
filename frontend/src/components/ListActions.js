@@ -7,36 +7,30 @@ import { useApi } from '../contexts/ApiProvider';
 
 export default function ListActions({ listId, onTaskAdded, onListDeleted }) {
     const [showAddTaskModal, setShowAddTaskModal] = useState(false);
+    const [showDeleteConfirmModal, setShowDeleteConfirmModal] = useState(false);
     const { fetchRequest } = useApi();
 
     const handleDeleteList = async () => {
-        // Show a confirmation dialog to the user
-        const confirmDelete = window.confirm(
-            'Are you sure you want to delete this list? This will also delete any tasks left on the list.'
-        );
-
-        if (!confirmDelete) {
-            // User canceled the delete operation
-            return;
-        }
-
         try {
-            // Perform the delete_list API request
             const response = await fetchRequest(`/delete_list/${listId}`, 'DELETE');
 
             if (response.status === 200) {
-                // List deleted successfully
                 onListDeleted(listId);
-                // For example, close the modal if it's open
                 setShowAddTaskModal(false);
             } else {
-                // Handle error response from the API
                 console.error('Failed to delete list:', response.data.message);
             }
         } catch (error) {
-            // Handle network or other errors
             console.error('An error occurred:', error);
         }
+    };
+
+    const handleOpenDeleteConfirmModal = () => {
+        setShowDeleteConfirmModal(true);
+    };
+
+    const handleCloseDeleteConfirmModal = () => {
+        setShowDeleteConfirmModal(false);
     };
 
     const handleOpenAddTaskModal = () => {
@@ -48,13 +42,12 @@ export default function ListActions({ listId, onTaskAdded, onListDeleted }) {
     };
 
     const handleTaskAdded = (newTask) => {
-        // Call the parent's onTaskAdded function to update the ListCard
         onTaskAdded(newTask);
     };
 
     return (
         <div className="d-flex justify-content-end">
-            <OverlayTrigger overlay={<Tooltip id="tooltip-add" style={{ fontSize: '11px' }}>Add Task</Tooltip>}>
+            <OverlayTrigger overlay={<Tooltip id="tooltip-add-task" style={{ fontSize: '11px' }}>Add Task</Tooltip>}>
                 <button
                     className="btn btn-link btn-sm mr-2 icon-link"
                     onClick={handleOpenAddTaskModal}
@@ -63,10 +56,10 @@ export default function ListActions({ listId, onTaskAdded, onListDeleted }) {
                 </button>
             </OverlayTrigger>
 
-            <OverlayTrigger overlay={<Tooltip id="tooltip-add" style={{ fontSize: '11px' }}>Delete List</Tooltip>}>
+            <OverlayTrigger overlay={<Tooltip id="tooltip-delete-list" style={{ fontSize: '11px' }}>Delete List</Tooltip>}>
                 <button
                     className="btn btn-link btn-sm icon-link"
-                    onClick={handleDeleteList}
+                    onClick={handleOpenDeleteConfirmModal}
                 >
                     <BsTrash className="icon-trash" />
                 </button>
@@ -80,12 +73,30 @@ export default function ListActions({ listId, onTaskAdded, onListDeleted }) {
                     <AddTask
                         listId={listId}
                         onClose={handleCloseAddTaskModal}
-                        onTaskAdded={handleTaskAdded} // Pass the function to update ListCard
+                        onTaskAdded={handleTaskAdded}
                     />
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant="secondary" onClick={handleCloseAddTaskModal}>
                         Close
+                    </Button>
+                </Modal.Footer>
+            </Modal>
+
+            {/* Delete confirmation modal */}
+            <Modal show={showDeleteConfirmModal} onHide={handleCloseDeleteConfirmModal}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Confirm Deletion</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    Are you sure you want to delete this list? This will also delete any tasks left on the list.
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={handleCloseDeleteConfirmModal}>
+                        Cancel
+                    </Button>
+                    <Button variant="danger" onClick={handleDeleteList}>
+                        Delete
                     </Button>
                 </Modal.Footer>
             </Modal>

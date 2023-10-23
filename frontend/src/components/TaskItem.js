@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import TaskComponent from './TaskComponent';
 
-export default function TaskItem({ item, listId }) {
+export default function TaskItem({ item, listId, onTaskDeleted }) {
     const [tasks, setTasks] = useState(item.children || []);
 
     const handleTaskAdded = (newSubtask, parentId) => {
@@ -23,6 +23,7 @@ export default function TaskItem({ item, listId }) {
             item={{...item, children: tasks}}  // Pass updated tasks here.
             listId={listId}
             onTaskAdded={handleTaskAdded}
+            onTaskDeleted={onTaskDeleted}
         />
     );
 }

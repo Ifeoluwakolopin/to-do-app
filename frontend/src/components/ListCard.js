@@ -25,6 +25,11 @@ export default function ListCard({ list, onListDeleted }) {
         setItems([...items, newTask]);
     };
 
+    const handleTaskDeleted = (deletedTaskId) => {
+        // Remove the deleted task from the items state
+        setItems((prevItems) => prevItems.filter((item) => item.id !== deletedTaskId));
+    };
+
     return (
         <Card className="w-100">
             <Card.Header>
@@ -47,7 +52,12 @@ export default function ListCard({ list, onListDeleted }) {
             </Card.Header>
             <ListGroup variant="flush" className="p-3">
                 {items.map(item => (
-                    <TaskItem key={item.id} item={item} listId={list.id} />
+                    <TaskItem 
+                        key={item.id} 
+                        item={item} 
+                        listId={list.id}
+                        onTaskDeleted={handleTaskDeleted} 
+                        />
                 ))}
             </ListGroup>
         </Card>
