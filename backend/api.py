@@ -34,17 +34,17 @@ def get_list(id):
     return jsonify(todo_list.serialize()), 200
 
 
-@main_api.route("/lists/<int:id>", methods=["PUT"])
+@main_api.route("/edit_list/<int:id>", methods=["PUT"])
 @login_required
-def update_list(id):
-    todo_list = TodoList.query.get_or_404(id=id, owner_id=current_user.id)
+def edit_list(id):
+    todo_list = TodoList.query.filter_by(id=id, owner_id=current_user.id).first_or_404()
     data = request.json
     todo_list.title = data["title"]
     db.session.commit()
     return jsonify(todo_list.serialize()), 200
 
 
-@main_api.route("/lists/<int:id>", methods=["DELETE"])
+@main_api.route("/delete_list/<int:id>", methods=["DELETE"])
 @login_required
 def delete_list(id):
     todo_list = TodoList.query.get_or_404(id=id, owner_id=current_user.id)

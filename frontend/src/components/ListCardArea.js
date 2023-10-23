@@ -31,12 +31,20 @@ export default function ListCardArea({ lists }) { // Receive lists as a prop
                 ))}
             </Row>
             <Row className="justify-content-center mt-3">
-                {currentPage > 0 && 
-                    <Button variant="outline-primary" className="mr-2" onClick={handlePrevious}>Previous</Button>
-                }
-                {endIndex < lists.length &&
-                    <Button variant="outline-primary" onClick={handleNext}>Next</Button>
-                }
+                <Col xs="auto">
+                    {currentPage > 0 && 
+                        <Button variant="outline-primary" className="mr-2" onClick={handlePrevious}>
+                            Previous
+                        </Button>
+                    }
+                </Col>
+                <Col xs="auto">
+                    {endIndex < lists.length &&
+                        <Button variant="outline-primary" onClick={handleNext}>
+                            Next
+                        </Button>
+                    }
+                </Col>
             </Row>
         </Container>
     );
