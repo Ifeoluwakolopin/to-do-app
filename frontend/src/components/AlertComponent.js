@@ -8,7 +8,7 @@ export default function AlertComponent({ variant = 'success', message, show, onC
         if (show) {
             timer = setTimeout(() => {
                 onClose();
-            }, 1000);
+            }, 3000);
         }
 
         return () => {
