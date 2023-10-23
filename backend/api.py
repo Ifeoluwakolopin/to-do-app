@@ -47,7 +47,8 @@ def edit_list(id):
 @main_api.route("/delete_list/<int:id>", methods=["DELETE"])
 @login_required
 def delete_list(id):
-    todo_list = TodoList.query.get_or_404(id=id, owner_id=current_user.id)
+    todo_list = TodoList.query.filter_by(id=id, owner_id=current_user.id).first_or_404()
+
     db.session.delete(todo_list)
     db.session.commit()
     return jsonify({"message": "List deleted successfully"}), 200

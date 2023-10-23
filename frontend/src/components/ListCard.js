@@ -1,3 +1,4 @@
+// ListCard.js
 import { Card, ListGroup, Row, Col } from 'react-bootstrap';
 import TaskItem from '../components/TaskItem';
 import ListActions from './ListActions';
@@ -20,6 +21,27 @@ export default function ListCard({ list }) {
         }
     };
 
+    const handleDeleteList = async () => {
+        try {
+            // Perform the delete_list API request
+            const response = await fetch(`/delete_list/${list.id}`, {
+                method: 'DELETE',
+            });
+
+            if (response.status === 200) {
+                // List deleted successfully, you can handle this as needed
+                // For example, remove the list from the UI or perform any cleanup
+                console.log('List deleted successfully');
+            } else {
+                // Handle error response from the API
+                console.error('Failed to delete list:', response.data.message);
+            }
+        } catch (error) {
+            // Handle network or other errors
+            console.error('An error occurred:', error);
+        }
+    };
+
     return (
         <Card className="w-100">
             <Card.Header>
@@ -33,7 +55,7 @@ export default function ListCard({ list }) {
                     </Col>
                     <Col xs="auto">
                         <ListActions 
-                            onDelete={() => console.log("Delete")}
+                            onDelete={handleDeleteList} // Pass the handleDeleteList function
                             listId={list.id}
                         />
                     </Col>

@@ -3,12 +3,33 @@ import React, { useState } from 'react';
 import { BsPlus, BsTrash } from 'react-icons/bs';
 import { OverlayTrigger, Tooltip, Modal, Button } from 'react-bootstrap';
 import AddTask from './AddTask';
+import { useApi } from '../contexts/ApiProvider';
 
 export default function ListActions({ onDelete, listId }) {
     const [showAddTaskModal, setShowAddTaskModal] = useState(false);
 
-    const handleDeleteList = () => {
-        onDelete(listId);
+    const { fetchRequest } = useApi();
+
+    const handleDeleteList = async () => {
+        try {
+            // Perform the delete_list API request
+            const response = await fetchRequest(`/delete_list/${listId}`, 'DELETE');
+
+            if (response.status === 200) {
+                // List deleted successfully, you can handle this as needed
+                // For example, close the modal if it's open
+                setShowAddTaskModal(false);
+
+                // Call the onDelete function passed as a prop
+                onDelete();
+            } else {
+                // Handle error response from the API
+                console.error('Failed to delete list:', response.data.message);
+            }
+        } catch (error) {
+            // Handle network or other errors
+            console.error('An error occurred:', error);
+        }
     };
 
     const handleOpenAddTaskModal = () => {
