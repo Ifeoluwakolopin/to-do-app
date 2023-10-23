@@ -23,12 +23,18 @@ export default function Title({ initialTitle, onSave, endpoint }) {
         }
     };
 
+    const handleKeyDown = (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            handleSave();
+        }
+    };
+
     const titleTooltip = (
         <Tooltip id="title-tooltip" style={{ fontSize: '12px' }}>
             Click to edit title
         </Tooltip>
     );
-    
 
     return (
         <>
@@ -38,7 +44,7 @@ export default function Title({ initialTitle, onSave, endpoint }) {
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
                     onBlur={handleSave}
-                    onKeyDown={(e) => e.key === 'Enter' && handleSave()}
+                    onKeyDown={handleKeyDown} // Handle Enter key press
                     autoFocus
                 />
             ) : (

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { BsPlus, BsTrash } from 'react-icons/bs';
+import { FaPlus } from 'react-icons/fa';
+import { BsTrash } from 'react-icons/bs';
 import { OverlayTrigger, Tooltip, Modal, Button } from 'react-bootstrap';
 import AddTask from './AddTask';
 import { useApi } from '../contexts/ApiProvider';
@@ -53,16 +54,16 @@ export default function ListActions({ listId, onTaskAdded, onListDeleted }) {
 
     return (
         <div className="d-flex justify-content-end">
-            <OverlayTrigger overlay={<Tooltip id="tooltip-add">Add Task</Tooltip>}>
+            <OverlayTrigger overlay={<Tooltip id="tooltip-add" style={{ fontSize: '11px' }}>Add Task</Tooltip>}>
                 <button
                     className="btn btn-link btn-sm mr-2 icon-link"
                     onClick={handleOpenAddTaskModal}
                 >
-                    <BsPlus className="icon-plus" />
+                    <FaPlus size={12} />
                 </button>
             </OverlayTrigger>
 
-            <OverlayTrigger overlay={<Tooltip id="tooltip-delete">Delete List</Tooltip>}>
+            <OverlayTrigger overlay={<Tooltip id="tooltip-add" style={{ fontSize: '11px' }}>Delete List</Tooltip>}>
                 <button
                     className="btn btn-link btn-sm icon-link"
                     onClick={handleDeleteList}
