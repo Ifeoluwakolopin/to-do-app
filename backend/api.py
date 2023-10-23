@@ -11,7 +11,9 @@ main_api = Blueprint("main", __name__)
 @main_api.route("/lists", methods=["GET"])
 @login_required
 def get_all_lists():
-    lists = [l.serialize() for l in TodoList.query.all(owner_id=current_user.id)]
+    lists = [
+        l.serialize() for l in TodoList.query.filter_by(owner_id=current_user.id).all()
+    ]
     return jsonify(lists), 200
 
 
@@ -19,8 +21,6 @@ def get_all_lists():
 @login_required
 def add_list():
     data = request.json
-    print("Data: ", data)
-    print(current_user.is_authenticated)
     new_list = TodoList(title=data["title"], owner_id=current_user.id)
     db.session.add(new_list)
     db.session.commit()

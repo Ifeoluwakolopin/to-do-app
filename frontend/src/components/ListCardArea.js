@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState } from 'react'; // No need for useEffect now
 import { Container, Row, Col, Button } from 'react-bootstrap';
 import ListCard from '../components/ListCard';
 
-export default function ListCardArea({ lists }) {
+export default function ListCardArea({ lists }) { // Receive lists as a prop
     const itemsPerPage = 3;
     const [currentPage, setCurrentPage] = useState(0);
 
@@ -19,7 +19,7 @@ export default function ListCardArea({ lists }) {
     }
 
     const startIndex = currentPage * itemsPerPage;
-    const endIndex = startIndex + itemsPerPage; 
+    const endIndex = startIndex + itemsPerPage;
 
     return (
         <Container>
@@ -35,7 +35,7 @@ export default function ListCardArea({ lists }) {
                     <Button variant="outline-primary" className="mr-2" onClick={handlePrevious}>Previous</Button>
                 }
                 {endIndex < lists.length &&
-                    <Button variant="outline-primary" onClick={handleNext}>View More</Button>
+                    <Button variant="outline-primary" onClick={handleNext}>Next</Button>
                 }
             </Row>
         </Container>

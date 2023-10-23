@@ -3,6 +3,9 @@ import TaskItem from '../components/TaskItem';
 import ListActions from './ListActions';
 
 export default function ListCard({ list }) {
+
+    const items = list.items || [];
+
     return (
         <Card className="w-100"> {/* Use w-100 to make card responsive */}
             <Card.Header>
@@ -17,8 +20,8 @@ export default function ListCard({ list }) {
                     </Col>
                 </Row>
             </Card.Header>
-            <ListGroup variant="flush" className="p-3"> {/* Added padding */}
-                {list.items.map(item => (
+            <ListGroup variant="flush" className="p-3">
+                {items.map(item => (
                     <TaskItem key={item.id} item={item} />
                 ))}
             </ListGroup>

@@ -3,7 +3,7 @@ import Body from '../components/Body';
 import SignUpForm from '../components/SignUpForm';
 import { useApi } from '../contexts/ApiProvider';
 import { useNavigate } from 'react-router-dom';
-import AlertComponent from '../components/Alert';
+import AlertComponent from '../components/AlertComponent';
 
 export default function SignUpPage() {
     const { fetchRequest } = useApi();

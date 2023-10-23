@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import { Button, Form, Row, Col } from 'react-bootstrap';
 import { FaPlus } from 'react-icons/fa';
 import { useApi } from '../contexts/ApiProvider';
-import AlertComponent from '../components/Alert';
+import AlertComponent from '../components/AlertComponent';
 
-export default function AddList() {
+export default function AddList({ onListAdded }) {
     const { fetchRequest } = useApi();
     const [title, setTitle] = useState('');
     const [showAlert, setShowAlert] = useState(false);
@@ -15,6 +15,7 @@ export default function AddList() {
         e.preventDefault();
 
         if (!title.trim()) {
+            setAlertVariant('warning')
             setAlertMessage("Please enter a title for the new list.");
             setShowAlert(true);
             return;
@@ -28,6 +29,11 @@ export default function AddList() {
                 setAlertVariant('success');
                 setAlertMessage('New list added successfully!');
                 setShowAlert(true);
+    
+                // Call the callback passed from HomePage with the newly added list
+                if (response.data) {
+                    onListAdded(response.data);
+                }
             } else {
                 setAlertVariant('danger');
                 setAlertMessage(response.data.message || 'Failed to add the list. Please try again.');

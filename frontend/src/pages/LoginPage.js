@@ -4,7 +4,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import Body from '../components/Body';
 import { useApi } from '../contexts/ApiProvider';
 import { useAuth } from '../contexts/AuthContext';
-import AlertComponent from '../components/Alert';
+import AlertComponent from '../components/AlertComponent';
 
 export default function LoginPage() {
     const location = useLocation();
