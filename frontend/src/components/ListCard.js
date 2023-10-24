@@ -32,8 +32,23 @@ export default function ListCard({ list, onListDeleted }) {
     };
 
     const handleTaskDeleted = (deletedTaskId) => {
-        // Remove the deleted task from the items state
-        setItems((prevItems) => prevItems.filter((item) => item.id !== deletedTaskId));
+        const deleteRecursive = (tasks, taskId) => {
+            // Try finding task directly in the current list
+            const updatedTasks = tasks.filter(task => task.id !== taskId);
+            
+            // If no task was deleted, try looking in children
+            if (updatedTasks.length === tasks.length) {
+                return tasks.map(task => ({
+                    ...task,
+                    children: task.children ? deleteRecursive(task.children, taskId) : []
+                }));
+            }
+            
+            return updatedTasks;
+        };
+    
+        // Assuming the parent maintains a tasks/items state:
+        setItems(prevItems => deleteRecursive(prevItems, deletedTaskId));
     };
 
     return (

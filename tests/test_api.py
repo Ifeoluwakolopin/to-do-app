@@ -86,3 +86,23 @@ class TestAPI:
             json.loads(response.data)["error"]
             == "Cannot move item to this depth level."
         )
+
+        # Test updating an item that doesn't exist
+        data = {"content": "Buy eggs", "list_id": self.list.id}
+        response = self.client.put(
+            "/items/999",
+            json=data,
+            headers={"Authorization": f"Bearer {self.access_token}"},
+        )
+        assert response.status_code == 404
+        assert json.loads(response.data)["message"] == "Item not found"
+
+        # Test updating an item with an invalid parent_id
+        data = {"parent_id": 999, "list_id": self.list.id}
+        response = self.client.put(
+            f"/items/{self.item.id}",
+            json=data,
+            headers={"Authorization": f"Bearer {self.access_token}"},
+        )
+        assert response.status_code == 404
+        assert json.loads(response.data)["message"] == "Parent item not found"

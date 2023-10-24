@@ -64,8 +64,8 @@ export default function TaskComponent({ item, listId, onTaskAdded, onTaskDeleted
                                     listId={item.id} 
                                     onTaskAdded={onTaskAdded} 
                                     onTaskDeleted={onTaskDeleted} 
-                                    tasks={child.children || []}  // NEW: pass the child's children
-                                    setTasks={setTasks}  // NEW: pass the setTasks handler
+                                    tasks={child.children || []} 
+                                    setTasks={setTasks}  
                                 />
                             </div>
                         ))

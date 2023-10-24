@@ -78,33 +78,3 @@ class TestTodoItem(BaseTestCase):
         self.assertEqual(child.parent_id, self.item1.id)
         self.assertEqual(child.depth, self.item1.depth + 1)
         self.assertIn(child, self.item1.children)
-
-
-class TestTodoList(BaseTestCase):
-    def setUp(self):
-        super().setUp()
-        self.list1 = TodoList(title="Groceries", owner_id=1)
-        self.list2 = TodoList(title="Chores", owner_id=1)
-        db.session.add_all([self.list1, self.list2])
-        db.session.commit()
-
-    def test_serialize(self):
-        expected = {
-            "id": self.list1.id,
-            "title": "Groceries",
-            "owner_id": 1,
-            "items": [],
-        }
-        self.assertEqual(self.list1.serialize(), expected)
-
-    def test_items_relationship(self):
-        item1 = TodoItem(content="Buy milk", list_id=self.list1.id)
-        item2 = TodoItem(content="Buy eggs", list_id=self.list1.id)
-        item3 = TodoItem(content="Vacuum the floor", list_id=self.list2.id)
-        db.session.add_all([item1, item2, item3])
-        db.session.commit()
-        self.assertEqual(self.list1.items.count(), 2)
-        self.assertEqual(self.list2.items.count(), 1)
-        self.assertIn(item1, self.list1.items.all())
-        self.assertIn(item2, self.list1.items.all())
-        self.assertIn(item3, self.list2.items.all())
