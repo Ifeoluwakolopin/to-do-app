@@ -23,7 +23,7 @@ export default function Header() {
 
     return (
         <Navbar bg="dark" sticky="top" className="Header">
-            <Container fluid>
+            <Container fluid className='mb-1'>
             <Navbar.Brand as={Link} to="/">
                 <img
                     src="/favicon.png" 
