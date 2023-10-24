@@ -41,6 +41,7 @@ export default function TaskComponent({ item, listId, onTaskAdded, onTaskDeleted
                         <TaskActions 
                             taskId={item.id} 
                             listId={listId}
+                            depth={item.depth}
                             parentId={parentId}  // <-- Pass the parentId here
                             onTaskDeleted={onTaskDeleted} 
                             onTaskAdded={(newSubtask) => onTaskAdded(newSubtask, item.id)}

@@ -63,7 +63,6 @@ def get_all_items():
             TodoList.owner_id == current_user.id
         )
     ]
-    print(items)
     return jsonify(items), 200
 
 
@@ -152,7 +151,6 @@ def delete_item(id):
         )
         .first_or_404()
     )
-    print(item)
 
     db.session.delete(item)
     db.session.commit()

@@ -5,7 +5,7 @@ import { OverlayTrigger, Tooltip, Modal, Button } from 'react-bootstrap';
 import AddTask from './AddTask';
 import { useApi } from '../contexts/ApiProvider';
 
-export default function TaskActions({ taskId, listId, parentId = null , onTaskAdded, onTaskDeleted }) {
+export default function TaskActions({ taskId, listId, parentId = null , depth, onTaskAdded, onTaskDeleted }) {
     const [showAddSubtaskModal, setShowAddSubtaskModal] = useState(false);
     const [deleteConfirmation, setDeleteConfirmation] = useState(false);
     const { fetchRequest } = useApi();
@@ -40,11 +40,13 @@ export default function TaskActions({ taskId, listId, parentId = null , onTaskAd
 
     return (
         <div className="d-flex justify-content-end">
-            <OverlayTrigger overlay={<Tooltip id="tooltip-add">Add Sub-Task</Tooltip>}>
-                <Button variant="link" className="btn-sm p-0 text-decoration-none mr-2" onClick={handleOpenAddSubtaskModal}>
-                    <FaPlus size={10} />
-                </Button>
-            </OverlayTrigger>
+            {depth < 3 && (  // Conditionally render based on depth
+                <OverlayTrigger overlay={<Tooltip id="tooltip-add">Add Sub-Task</Tooltip>}>
+                    <Button variant="link" className="btn-sm p-0 text-decoration-none mr-2" onClick={handleOpenAddSubtaskModal}>
+                        <FaPlus size={10} />
+                    </Button>
+                </OverlayTrigger>
+            )}
 
             <OverlayTrigger 
                 overlay={<Tooltip id="tooltip-delete">{deleteConfirmation ? "Confirm Delete?" : "Delete Task"}</Tooltip>}
