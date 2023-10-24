@@ -38,7 +38,7 @@ export default function HomePage() {
     };
 
     return (
-        <div className="home-page-content">
+        <div className="home-page-content py-5">
             <div className="mb-4">
                 <AddList onListAdded={addNewList} />
             </div>

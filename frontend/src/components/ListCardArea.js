@@ -22,10 +22,10 @@ export default function ListCardArea({ lists, onListDeleted }) {
     const endIndex = startIndex + itemsPerPage;
 
     return (
-        <Container>
+        <Container className="py-4" style={{backgroundColor: "#f7f7f7"}}>
             <Row>
                 {lists.slice(startIndex, endIndex).map(list => (
-                    <Col key={list.id} sm={12} md={4} className="mb-3">
+                    <Col key={list.id} sm={12} md={lists.length === 1 ? 12 : lists.length === 2 ? 6 : 4} className="mb-3">
                         <ListCard list={list} onListDeleted={onListDeleted} />
                     </Col>
                 ))}

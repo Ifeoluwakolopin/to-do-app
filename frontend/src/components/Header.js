@@ -24,7 +24,17 @@ export default function Header() {
     return (
         <Navbar bg="dark" sticky="top" className="Header">
             <Container fluid>
-                <Navbar.Brand as={Link} to="/" style={{ color: 'white' }}>ToDo App</Navbar.Brand>
+            <Navbar.Brand as={Link} to="/">
+                <img
+                    src="/favicon.png" 
+                    width="30" 
+                    height="30"
+                    className="d-inline-block align-top"
+                    alt="ToDo App Icon"
+                />
+                <span style={{ color: 'white', marginLeft: '10px' }}>ToDo App</span>
+            </Navbar.Brand>
+
                 <Nav className="ml-auto">
                     {isAuthenticated ? (
                         <Button variant="outline-info" onClick={handleLogout}>
