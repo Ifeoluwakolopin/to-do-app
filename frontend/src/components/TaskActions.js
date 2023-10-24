@@ -5,7 +5,7 @@ import { OverlayTrigger, Tooltip, Modal, Button } from 'react-bootstrap';
 import AddTask from './AddTask';
 import { useApi } from '../contexts/ApiProvider';
 
-export default function TaskActions({ taskId, listId, onTaskAdded, onTaskDeleted }) {
+export default function TaskActions({ taskId, listId, parentId = null , onTaskAdded, onTaskDeleted }) {
     const [showAddSubtaskModal, setShowAddSubtaskModal] = useState(false);
     const [deleteConfirmation, setDeleteConfirmation] = useState(false);
     const { fetchRequest } = useApi();
@@ -19,8 +19,11 @@ export default function TaskActions({ taskId, listId, onTaskAdded, onTaskDeleted
             return;
         }
 
+        // Construct the URL with parent_id as a query parameter if it exists
+        const url = parentId ? `/items/${taskId}?parent_id=${parentId}` : `/items/${taskId}`;
+
         try {
-            const response = await fetchRequest(`/items/${taskId}`, 'DELETE');
+            const response = await fetchRequest(url, 'DELETE');
 
             if (response.status === 200) {
                 console.log('Task deleted successfully');

@@ -137,13 +137,26 @@ def update_item(id):
 @main_api.route("/items/<int:id>", methods=["DELETE"])
 @login_required
 def delete_item(id):
+    parent_id = request.args.get("parent_id")
+
+    # Convert the parent_id from string to int if it's not None
+    if parent_id is not None:
+        parent_id = int(parent_id)
+
     item = (
         TodoItem.query.join(TodoList, TodoItem.list_id == TodoList.id)
-        .filter(TodoItem.id == id, TodoList.owner_id == current_user.id)
+        .filter(
+            TodoItem.id == id,
+            TodoItem.parent_id == parent_id,
+            TodoList.owner_id == current_user.id,
+        )
         .first_or_404()
     )
+    print(item)
+
     db.session.delete(item)
     db.session.commit()
+
     return jsonify({"message": "Item deleted successfully"}), 200
 
 

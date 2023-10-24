@@ -5,7 +5,7 @@ import Title from './Title';
 import TaskActions from './TaskActions';
 import { useApi } from '../contexts/ApiProvider';
 
-export default function TaskComponent({ item, listId, onTaskAdded, onTaskDeleted, tasks, setTasks }) {
+export default function TaskComponent({ item, listId, onTaskAdded, onTaskDeleted, parentId = null }) {
     const [showSubtasks, setShowSubtasks] = useState(false);
     const { fetchRequest } = useApi();
 
@@ -40,7 +40,8 @@ export default function TaskComponent({ item, listId, onTaskAdded, onTaskDeleted
                     <div className="d-flex align-items-center">
                         <TaskActions 
                             taskId={item.id} 
-                            listId={listId} 
+                            listId={listId}
+                            parentId={parentId}  // <-- Pass the parentId here
                             onTaskDeleted={onTaskDeleted} 
                             onTaskAdded={(newSubtask) => onTaskAdded(newSubtask, item.id)}
                         />
@@ -56,20 +57,19 @@ export default function TaskComponent({ item, listId, onTaskAdded, onTaskDeleted
                         )}
                     </div>
                 </Card.Body>
-                    {showSubtasks && tasks && tasks.length > 0 && (
-                        tasks.map((child) => (
-                            <div key={child.id} className="ml-4">
-                                <TaskComponent 
-                                    item={child} 
-                                    listId={item.id} 
-                                    onTaskAdded={onTaskAdded} 
-                                    onTaskDeleted={onTaskDeleted} 
-                                    tasks={child.children || []} 
-                                    setTasks={setTasks}  
-                                />
-                            </div>
-                        ))
-                    )}
+                {showSubtasks && item.children && item.children.length > 0 && (
+                    item.children.map((child) => (
+                        <div key={child.id} className="ml-4">
+                            <TaskComponent 
+                                item={child} 
+                                listId={listId} 
+                                onTaskAdded={onTaskAdded} 
+                                onTaskDeleted={onTaskDeleted}
+                                parentId={item.id}
+                            />
+                        </div>
+                    ))
+                )}
             </Card>
         </>
     );

@@ -171,7 +171,9 @@ class TodoItem(db.Model):
 
     # Explicit parent-child relationships
     children = db.relationship(
-        "TodoItem", backref=db.backref("parent", remote_side=[id])
+        "TodoItem",
+        backref=db.backref("parent", remote_side=[id]),
+        cascade="all, delete-orphan",
     )
 
     def serialize_with_children(self):
