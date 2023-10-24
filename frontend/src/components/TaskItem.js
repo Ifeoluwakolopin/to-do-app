@@ -20,10 +20,12 @@ export default function TaskItem({ item, listId, onTaskDeleted }) {
 
     return (
         <TaskComponent
-            item={{...item, children: tasks}}  // Pass updated tasks here.
+            item={{...item, children: tasks}}
             listId={listId}
             onTaskAdded={handleTaskAdded}
             onTaskDeleted={onTaskDeleted}
+            tasks={tasks}  
+            setTasks={setTasks}
         />
     );
 }

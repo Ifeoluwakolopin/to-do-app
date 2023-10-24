@@ -107,17 +107,29 @@ class TodoList(db.Model):
 
     def serialize(self):
         """
-        Serializes the model instance into a dictionary.
+        Serialize the TodoList object.
 
         Returns:
-            A dictionary containing the serialized model instance.
+        --------
+        dict
+            A dictionary representation of the to-do list object with tasks and their respective sub-tasks.
         """
-        return {
+
+        # Get all tasks (items without parent_id) associated with this list
+        tasks = TodoItem.query.filter_by(list_id=self.id, parent_id=None).all()
+
+        # For each task, get its sub-tasks (items with parent_id) and assign them as children
+        for task in tasks:
+            task.children = TodoItem.query.filter_by(parent_id=task.id).all()
+
+        # Serialize the list along with its tasks and nested sub-tasks
+        serialized_data = {
             "id": self.id,
             "title": self.title,
-            "owner_id": self.owner_id,
-            "items": [i.serialize() for i in self.items],
+            "items": [task.serialize_with_children() for task in tasks],
         }
+
+        return serialized_data
 
 
 class TodoItem(db.Model):
@@ -162,18 +174,26 @@ class TodoItem(db.Model):
         "TodoItem", backref=db.backref("parent", remote_side=[id])
     )
 
-    def serialize(self):
+    def serialize_with_children(self):
         """
-        Returns a dictionary representation of the to-do item.
+        Returns a dictionary representation of the to-do item including its children.
         """
-        return {
+        serialized_data = {
             "id": self.id,
             "content": self.content,
             "depth": self.depth,
             "list_id": self.list_id,
             "parent_id": self.parent_id,
-            "children": [i.serialize() for i in self.children],
         }
+
+        if self.children:
+            serialized_data["children"] = [
+                child.serialize_with_children() for child in self.children
+            ]
+        else:
+            serialized_data["children"] = []
+
+        return serialized_data
 
     def __init__(self, *args, **kwargs):
         """

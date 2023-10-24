@@ -63,6 +63,7 @@ def get_all_items():
             TodoList.owner_id == current_user.id
         )
     ]
+    print(items)
     return jsonify(items), 200
 
 
@@ -90,7 +91,7 @@ def create_item():
     )
     db.session.add(new_item)
     db.session.commit()
-    return jsonify(new_item.serialize()), 201
+    return jsonify(new_item.serialize_with_children()), 201
 
 
 @main_api.route("/items/<int:id>", methods=["GET"])
@@ -102,7 +103,7 @@ def get_item(id):
         .filter(TodoItem.id == id, TodoList.owner_id == current_user.id)
         .first_or_404()
     )
-    return jsonify(item.serialize()), 200
+    return jsonify(item.serialize_with_children()), 200
 
 
 @main_api.route("/items/<int:id>", methods=["PUT"])
@@ -130,7 +131,7 @@ def update_item(id):
         item.depth = 1
 
     db.session.commit()
-    return jsonify(item.serialize()), 200
+    return jsonify(item.serialize_with_children()), 200
 
 
 @main_api.route("/items/<int:id>", methods=["DELETE"])

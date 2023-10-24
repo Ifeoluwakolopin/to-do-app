@@ -29,6 +29,7 @@ export default function AddTask({ listId, parentId, onTaskAdded }) {
 
             if (response.status === 201) {
                 setContent(''); // Clear the input field
+                console.log(response.data)
                 onTaskAdded(response.data); // Pass the new task data to the parent component
                 setAlertVariant('success');                  // Set the variant to success
                 setAlertMessage('Task added successfully.'); // Set the appropriate message
@@ -49,7 +50,6 @@ export default function AddTask({ listId, parentId, onTaskAdded }) {
 
     return (
         <div>
-            {/* Step 4: Render the AlertComponent */}
             <AlertComponent
                 show={alertShow}
                 variant={alertVariant}

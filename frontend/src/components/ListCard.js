@@ -6,13 +6,19 @@ import Title from './Title';
 import { useApi } from '../contexts/ApiProvider';
 
 export default function ListCard({ list, onListDeleted }) {
-    const [items, setItems] = useState(list.items || []); // Initialize with list items
+
+    // Only include items without a parentId (i.e., top-level tasks)
+    const topLevelTasks = list.items.filter(item => !item.parentId);
+
+    // Then, use this filtered list to set your items state
+    const [items, setItems] = useState(topLevelTasks);
 
     const { fetchRequest } = useApi();
 
     const handleSaveTitle = async (newTitle, endpoint) => {
         try {
             const response = await fetchRequest(endpoint, 'PUT', { title: newTitle });
+            console.log('Response:', response);
             return response; // Return the response object
         } catch (error) {
             console.error("Error updating title:", error);

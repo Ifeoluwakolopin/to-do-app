@@ -5,7 +5,7 @@ import Title from './Title';
 import TaskActions from './TaskActions';
 import { useApi } from '../contexts/ApiProvider';
 
-export default function TaskComponent({ item, listId, onTaskAdded, onTaskDeleted }) {
+export default function TaskComponent({ item, listId, onTaskAdded, onTaskDeleted, tasks, setTasks }) {
     const [showSubtasks, setShowSubtasks] = useState(false);
     const { fetchRequest } = useApi();
 
@@ -35,34 +35,42 @@ export default function TaskComponent({ item, listId, onTaskAdded, onTaskDeleted
                     <Title
                         initialTitle={item.content}
                         onSave={(newTitle) => handleSaveTitle(newTitle, `/items/${item.id}`)}
-                        className="flex-grow-1 mr-2 text-break" // Added text-break to handle long titles.
+                        className="flex-grow-1 mr-2 text-break"
                     />
                     <div className="d-flex align-items-center">
-                    <TaskActions taskId={item.id} listId={listId} onTaskDeleted={onTaskDeleted} />
+                        <TaskActions 
+                            taskId={item.id} 
+                            listId={listId} 
+                            onTaskDeleted={onTaskDeleted} 
+                            onTaskAdded={(newSubtask) => onTaskAdded(newSubtask, item.id)}
+                        />
+
                         {item.children && item.children.length > 0 && (
                             <Button
                                 variant="link"
                                 onClick={() => setShowSubtasks(!showSubtasks)}
                                 className="ml-2 p-0"
                             >
-                                {showSubtasks ? (
-                                    <BsChevronUp size="20" />
-                                ) : (
-                                    <BsChevronDown size="20" />
-                                )}
+                                {showSubtasks ? <BsChevronUp size="20" /> : <BsChevronDown size="20" />}
                             </Button>
                         )}
                     </div>
                 </Card.Body>
+                    {showSubtasks && tasks && tasks.length > 0 && (
+                        tasks.map((child) => (
+                            <div key={child.id} className="ml-4">
+                                <TaskComponent 
+                                    item={child} 
+                                    listId={item.id} 
+                                    onTaskAdded={onTaskAdded} 
+                                    onTaskDeleted={onTaskDeleted} 
+                                    tasks={child.children || []}  // NEW: pass the child's children
+                                    setTasks={setTasks}  // NEW: pass the setTasks handler
+                                />
+                            </div>
+                        ))
+                    )}
             </Card>
-
-            {showSubtasks && item.children && item.children.length > 0 && (
-                item.children.map((child) => (
-                    <div key={child.id} className="ml-4">
-                        <TaskComponent item={child} listId={item.id} onTaskAdded={onTaskAdded} />
-                    </div>
-                ))
-            )}
         </>
     );
 }
