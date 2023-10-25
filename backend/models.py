@@ -238,15 +238,11 @@ class TodoItem(db.Model):
         Marks the task and all its subtasks as complete.
         """
         # Mark the current task as complete
-        self.is_complete = True
+        self.is_complete = not self.is_complete
 
         # Recursively mark all children tasks as complete
         for child in self.children:
             child.mark_complete()
-
-        # Optional: Save the changes in the database
-        # This step can be moved out if you prefer to handle commits separately.
-        db.session.commit()
 
     def get_max_subtree_depth(self):
         if not self.children:

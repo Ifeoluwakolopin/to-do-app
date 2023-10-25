@@ -7,7 +7,10 @@ import { useApi } from '../contexts/ApiProvider';
 
 export default function TaskComponent({ item, listId, onTaskAdded, onTaskDeleted, parentId = null }) {
     const [showSubtasks, setShowSubtasks] = useState(false);
+    const [isComplete, setIsComplete] = useState(item.is_complete);
+    const [isHovered, setIsHovered] = useState(false); // Handle hover state here
     const { fetchRequest } = useApi();
+
 
     const handleSaveTitle = async (newTitle, endpoint) => {
         try {
@@ -28,9 +31,17 @@ export default function TaskComponent({ item, listId, onTaskAdded, onTaskDeleted
         }
     };
 
+    const handleTaskCompletionToggle = async (taskId) => {
+        setIsComplete(!isComplete);  // Update the local state
+    };
+
     return (
         <>
-            <Card className="mb-2 mx-1 shadow-sm">
+            <Card 
+                className="mb-2 mx-1 shadow-sm" 
+                onMouseEnter={() => setIsHovered(true)}  // Handle hover state here
+                onMouseLeave={() => setIsHovered(false)} // Handle hover state here
+            >
                 <Card.Body className="d-flex justify-content-between align-items-center py-2">
                     <Title
                         initialTitle={item.content}
@@ -38,15 +49,18 @@ export default function TaskComponent({ item, listId, onTaskAdded, onTaskDeleted
                         className="flex-grow-1 mr-2 text-break"
                     />
                     <div className="d-flex align-items-center">
-                        <TaskActions 
-                            taskId={item.id} 
-                            listId={listId}
-                            depth={item.depth}
-                            parentId={parentId}  // <-- Pass the parentId here
-                            onTaskDeleted={onTaskDeleted} 
-                            onTaskAdded={(newSubtask) => onTaskAdded(newSubtask, item.id)}
-                        />
-
+                        {isHovered && ( // 4. Conditionally render TaskActions based on hover state
+                            <TaskActions 
+                                taskId={item.id} 
+                                listId={listId}
+                                depth={item.depth}
+                                parentId={parentId}  
+                                onTaskDeleted={onTaskDeleted} 
+                                onTaskAdded={(newSubtask) => onTaskAdded(newSubtask, item.id)}
+                                isComplete={isComplete}  // Pass the completion status
+                                onCompletionToggle={handleTaskCompletionToggle}  // Pass the handler
+                            />
+                            )}
                         {item.children && item.children.length > 0 && (
                             <Button
                                 variant="link"

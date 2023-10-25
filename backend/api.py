@@ -165,7 +165,7 @@ def complete_item(id):
         .filter(TodoItem.id == id, TodoList.owner_id == current_user.id)
         .first_or_404()
     )
-    item.mark_as_complete()
+    item.mark_complete()
     db.session.commit()
     return jsonify(item.serialize_with_children()), 200
 

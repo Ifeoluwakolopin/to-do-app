@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { FaPlus } from 'react-icons/fa';
-import { BsTrash } from 'react-icons/bs';
+import { BsTrash, BsCheckCircle } from 'react-icons/bs';
 import { OverlayTrigger, Tooltip, Modal, Button } from 'react-bootstrap';
 import AddTask from './AddTask';
 import { useApi } from '../contexts/ApiProvider';
 
-export default function TaskActions({ taskId, listId, parentId = null , depth, onTaskAdded, onTaskDeleted }) {
+export default function TaskActions({ taskId, listId, parentId = null, depth, onTaskAdded, onTaskDeleted, isComplete, onCompletionToggle }) {
     const [showAddSubtaskModal, setShowAddSubtaskModal] = useState(false);
     const [deleteConfirmation, setDeleteConfirmation] = useState(false);
     const { fetchRequest } = useApi();
@@ -13,13 +13,29 @@ export default function TaskActions({ taskId, listId, parentId = null , depth, o
     const handleOpenAddSubtaskModal = () => setShowAddSubtaskModal(true);
     const handleCloseAddSubtaskModal = () => setShowAddSubtaskModal(false);
 
+    const handleTaskCompletion = async () => {
+        const url = `/items/${taskId}/complete`;
+    
+        try {
+            const response = await fetchRequest(url, 'PUT');
+    
+            if (response.status === 200) {
+                console.log('Task toggled successfully');
+                onCompletionToggle(taskId);  // Notify the parent of the change
+            } else {
+                console.error('Failed to toggle task status:', response.data.message);
+            }
+        } catch (error) {
+            console.error('An error occurred:', error);
+        }
+    };
+
     const handleDeleteTaskClick = async () => {
         if (!deleteConfirmation) {
             setDeleteConfirmation(true);
             return;
         }
 
-        // Construct the URL with parent_id as a query parameter if it exists
         const url = parentId ? `/items/${taskId}?parent_id=${parentId}` : `/items/${taskId}`;
 
         try {
@@ -27,7 +43,7 @@ export default function TaskActions({ taskId, listId, parentId = null , depth, o
 
             if (response.status === 200) {
                 console.log('Task deleted successfully');
-                onTaskDeleted(taskId); // Inform the parent component about the deletion
+                onTaskDeleted(taskId);
             } else {
                 console.error('Failed to delete task:', response.data.message);
             }
@@ -35,15 +51,21 @@ export default function TaskActions({ taskId, listId, parentId = null , depth, o
             console.error('An error occurred:', error);
         }
 
-        setDeleteConfirmation(false);  // Reset the delete confirmation mode
+        setDeleteConfirmation(false);
     };
 
     return (
         <div className="d-flex justify-content-end">
-            {depth < 3 && (  // Conditionally render based on depth
+            <OverlayTrigger overlay={<Tooltip id="tooltip-complete">{isComplete ? "Mark as Incomplete" : "Mark as Complete"}</Tooltip>}>
+                <Button variant="link" className="btn-sm p-0 text-decoration-none mr-3" onClick={handleTaskCompletion}>
+                    <BsCheckCircle size={16} color={isComplete ? "#0056b3" : "#b0c4de"} /> {/* Deep blue for completed, light blue for incomplete */}
+                </Button>
+            </OverlayTrigger>
+
+            {depth < 3 && (
                 <OverlayTrigger overlay={<Tooltip id="tooltip-add">Add Sub-Task</Tooltip>}>
-                    <Button variant="link" className="btn-sm p-0 text-decoration-none mr-2" onClick={handleOpenAddSubtaskModal}>
-                        <FaPlus size={10} />
+                    <Button variant="link" className="btn-sm p-0 text-decoration-none mr-3" onClick={handleOpenAddSubtaskModal}>
+                        <FaPlus size={10} color="#0056b3" /> {/* Standard blue for icons */}
                     </Button>
                 </OverlayTrigger>
             )}
@@ -53,11 +75,11 @@ export default function TaskActions({ taskId, listId, parentId = null , depth, o
             >
                 <Button 
                     variant="link" 
-                    className={`btn-sm p-0 text-decoration-none mr-2 ${deleteConfirmation ? "text-danger" : ""}`} 
+                    className={`btn-sm p-0 text-decoration-none ${deleteConfirmation ? "text-danger" : ""}`} 
                     onClick={handleDeleteTaskClick}
-                    onMouseLeave={() => setDeleteConfirmation(false)} // Reset the delete confirmation mode when the mouse leaves the button
+                    onMouseLeave={() => setDeleteConfirmation(false)}
                 >
-                    <BsTrash />
+                    <BsTrash color="#0056b3" /> {/* Standard blue for icons */}
                 </Button>
             </OverlayTrigger>
 
