@@ -168,8 +168,7 @@ class TodoItem(db.Model):
     depth = db.Column(db.Integer, default=1)
     list_id = db.Column(db.Integer, db.ForeignKey("lists.id"), nullable=False)
     parent_id = db.Column(db.Integer, db.ForeignKey("items.id"), nullable=True)
-
-    # Explicit parent-child relationships
+    is_complete = db.Column(db.Boolean, default=False, nullable=False)
     children = db.relationship(
         "TodoItem",
         backref=db.backref("parent", remote_side=[id]),
@@ -186,6 +185,7 @@ class TodoItem(db.Model):
             "depth": self.depth,
             "list_id": self.list_id,
             "parent_id": self.parent_id,
+            "is_complete": self.is_complete,  # Include the is_complete field in the serialized data
         }
 
         if self.children:
@@ -232,3 +232,33 @@ class TodoItem(db.Model):
         child.parent = self
         child.parent_id = self.id
         child.depth = self.depth + 1
+
+    def mark_complete(self):
+        """
+        Marks the task and all its subtasks as complete.
+        """
+        # Mark the current task as complete
+        self.is_complete = True
+
+        # Recursively mark all children tasks as complete
+        for child in self.children:
+            child.mark_complete()
+
+        # Optional: Save the changes in the database
+        # This step can be moved out if you prefer to handle commits separately.
+        db.session.commit()
+
+    def get_max_subtree_depth(self):
+        if not self.children:
+            return self.depth
+        return max(child.get_max_subtree_depth() for child in self.children)
+
+    def move_and_update_depth(self, new_list_id, new_parent_id, new_depth):
+        depth_difference = new_depth - self.depth
+        self.list_id = new_list_id
+        self.parent_id = new_parent_id
+        self.depth += depth_difference
+        for child in self.children:
+            child.move_and_update_depth(
+                new_list_id, self.id, child.depth + depth_difference
+            )

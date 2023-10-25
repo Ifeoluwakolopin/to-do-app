@@ -1,4 +1,3 @@
-import os
 from flask import Blueprint, request, jsonify
 from .models import db, TodoList, TodoItem, User
 from flask_login import login_user, logout_user, login_required, current_user
@@ -156,6 +155,67 @@ def delete_item(id):
     db.session.commit()
 
     return jsonify({"message": "Item deleted successfully"}), 200
+
+
+@main_api.route("/items/<int:id>/complete", methods=["PUT"])
+@login_required
+def complete_item(id):
+    item = (
+        TodoItem.query.join(TodoList, TodoItem.list_id == TodoList.id)
+        .filter(TodoItem.id == id, TodoList.owner_id == current_user.id)
+        .first_or_404()
+    )
+    item.mark_as_complete()
+    db.session.commit()
+    return jsonify(item.serialize_with_children()), 200
+
+
+@main_api.route("/items/<int:id>/move", methods=["PUT"])
+@login_required
+def move_task(id):
+    data = request.json
+    new_list_id = data["list_id"]
+    new_parent_id = data.get("parent_id")
+
+    item = (
+        TodoItem.query.join(TodoList, TodoItem.list_id == TodoList.id)
+        .filter(TodoItem.id == id, TodoList.owner_id == current_user.id)
+        .first_or_404()
+    )
+
+    # Calculate the maximum depth of the item's subtree
+    max_subtree_depth = item.get_max_subtree_depth()
+
+    # If moving to another item
+    if new_parent_id:
+        parent_item = TodoItem.query.get(new_parent_id)
+        if not parent_item:
+            return jsonify({"error": "Invalid parent ID provided."}), 400
+        if parent_item.depth + max_subtree_depth > 3:
+            return (
+                jsonify(
+                    {"error": "Moving this item here would exceed depth constraints."}
+                ),
+                400,
+            )
+        new_depth = parent_item.depth + 1
+    else:
+        # If moving to root level
+        new_depth = 1
+        if max_subtree_depth > 3:
+            return (
+                jsonify(
+                    {
+                        "error": "This item's depth with its sub-tasks is too much to move to root."
+                    }
+                ),
+                400,
+            )
+
+    item.move_and_update_depth(new_list_id, new_parent_id, new_depth)
+    db.session.commit()
+
+    return jsonify(item.serialize_with_children()), 200
 
 
 # Signup
