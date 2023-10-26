@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
+import { Draggable } from 'react-beautiful-dnd';
 import TaskComponent from './TaskComponent';
 
-export default function TaskItem({ item, listId, onTaskDeleted }) {
+export default function TaskItem({ item, listId, onTaskDeleted, index }) {
     const [items, setItems] = useState(item.children || []);
     const [isComplete, setIsComplete] = useState(item.is_complete);
 
@@ -102,14 +103,28 @@ export default function TaskItem({ item, listId, onTaskDeleted }) {
        
     
     return (
-        <TaskComponent
-            item={{...item, children: items, is_complete: isComplete}}
-            listId={listId}
-            onTaskAdded={handleItemAdded}
-            onTaskDeleted={handleItemDelete}
-            parentId={null}
-            isComplete={isComplete}
-            onCompletionToggle={handleItemCompletionToggle}
-        />
+        <Draggable draggableId={`taskItem-${item.id}`} index={index}>
+            {(provided, snapshot) => (
+                <div 
+                    ref={provided.innerRef} 
+                    {...provided.draggableProps} 
+                    {...provided.dragHandleProps}
+                    style={{
+                        ...provided.draggableProps.style,
+                        backgroundColor: snapshot.isDragging ? 'lightgrey' : 'white',
+                    }}
+                >
+                    <TaskComponent
+                        item={{...item, children: items, is_complete: isComplete}}
+                        listId={listId}
+                        onTaskAdded={handleItemAdded}
+                        onTaskDeleted={handleItemDelete}
+                        parentId={null}
+                        isComplete={isComplete}
+                        onCompletionToggle={handleItemCompletionToggle}
+                    />
+                </div>
+            )}
+        </Draggable>
     );
 }

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Card, ListGroup, Row, Col } from 'react-bootstrap';
+import { Droppable } from "react-beautiful-dnd";
 import TaskItem from '../components/TaskItem';
 import ListActions from './ListActions';
 import Title from './Title';
@@ -58,7 +59,7 @@ export default function ListCard({ list, onListDeleted }) {
                     <Col>
                         <Title 
                             initialTitle={list.title}
-                            onSave={handleSaveTitle} // Pass the handleSaveTitle function
+                            onSave={handleSaveTitle} 
                             endpoint={`/edit_list/${list.id}`}
                         />
                     </Col>
@@ -71,16 +72,28 @@ export default function ListCard({ list, onListDeleted }) {
                     </Col>
                 </Row>
             </Card.Header>
-            <ListGroup variant="flush" className="p-3">
-                {items.map(item => (
-                    <TaskItem 
-                        key={item.id} 
-                        item={item} 
-                        listId={list.id}
-                        onTaskDeleted={handleTaskDeleted} 
-                        />
-                ))}
-            </ListGroup>
+            <Droppable droppableId={`listCard-${list.id}`}>
+                {(provided, snapshot) => (
+                    <ListGroup 
+                        variant="flush" 
+                        className="p-3" 
+                        ref={provided.innerRef} 
+                        {...provided.droppableProps}
+                        style={{backgroundColor: snapshot.isDraggingOver ? 'lightblue' : 'transparent'}}
+                    >
+                        {items.map((item, index) => (
+                            <TaskItem 
+                                key={item.id} 
+                                item={item} 
+                                listId={list.id}
+                                onTaskDeleted={handleTaskDeleted} 
+                                index={index}  // added index prop for react-beautiful-dnd
+                            />
+                        ))}
+                        {provided.placeholder}
+                    </ListGroup>
+                )}
+            </Droppable>
         </Card>
     );
 }
