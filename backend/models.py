@@ -257,18 +257,3 @@ class TodoItem(db.Model):
                 )
                 if all_siblings_complete:
                     self.parent.is_complete = True
-
-    def get_max_subtree_depth(self):
-        if not self.children:
-            return self.depth
-        return max(child.get_max_subtree_depth() for child in self.children)
-
-    def move_and_update_depth(self, new_list_id, new_parent_id, new_depth):
-        depth_difference = new_depth - self.depth
-        self.list_id = new_list_id
-        self.parent_id = new_parent_id
-        self.depth += depth_difference
-        for child in self.children:
-            child.move_and_update_depth(
-                new_list_id, self.id, child.depth + depth_difference
-            )
