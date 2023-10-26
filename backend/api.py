@@ -183,12 +183,17 @@ def move_task(id):
         .first_or_404()
     )
 
-    # Update the list_id for the item, set parent_id to None, and set depth to 1.
-    item.list_id = new_list_id
-    item.parent_id = None
-    item.depth = 1
+    print("Old item:", item.serialize_with_children())
+    # Use the move method to update the item's list_id, parent_id, and depth.
+    item.move(new_list_id)
     db.session.commit()
 
+    item = (
+        TodoItem.query.join(TodoList)
+        .filter(TodoItem.id == id, TodoList.owner_id == current_user.id)
+        .first_or_404()
+    )
+    print("New Item:", item.serialize_with_children())
     return jsonify(item.serialize_with_children()), 200
 
 

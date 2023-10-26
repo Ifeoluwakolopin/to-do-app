@@ -233,6 +233,29 @@ class TodoItem(db.Model):
         child.parent_id = self.id
         child.depth = self.depth + 1
 
+    def move(self, new_list_id):
+        """
+        Moves the current item and all its children to a new list.
+        """
+        # Update the current item's attributes
+        self.list_id = new_list_id
+        self.parent_id = None
+        self.depth = 1
+
+        # Recursively update all children
+        for child in self.children:
+            child.update_child_list_and_depth(new_list_id, 2)
+
+    def update_child_list_and_depth(self, new_list_id, new_depth):
+        """
+        Recursively updates the list_id and depth of the child and its children.
+        """
+        self.list_id = new_list_id
+        self.depth = new_depth
+
+        for grandchild in self.children:
+            grandchild.update_child_list_and_depth(new_list_id, new_depth + 1)
+
     def mark_complete(self):
         """
         Marks the task and possibly its subtasks as complete or incomplete based on conditions.
