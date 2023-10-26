@@ -5,7 +5,7 @@ import { OverlayTrigger, Tooltip, Modal, Button } from 'react-bootstrap';
 import AddTask from './AddTask';
 import { useApi } from '../contexts/ApiProvider';
 
-export default function TaskActions({ taskId, listId, parentId = null, depth, onTaskAdded, onTaskDeleted, isComplete, onCompletionToggle }) {
+export default function TaskActions({ itemId, listId, parentId = null, depth, onTaskAdded, onTaskDeleted, isComplete, onCompletionToggle }) {
     const [showAddSubtaskModal, setShowAddSubtaskModal] = useState(false);
     const [deleteConfirmation, setDeleteConfirmation] = useState(false);
     const { fetchRequest } = useApi();
@@ -14,14 +14,15 @@ export default function TaskActions({ taskId, listId, parentId = null, depth, on
     const handleCloseAddSubtaskModal = () => setShowAddSubtaskModal(false);
 
     const handleTaskCompletion = async () => {
-        const url = `/items/${taskId}/complete`;
+        const url = `/items/${itemId}/complete`;
     
         try {
             const response = await fetchRequest(url, 'PUT');
     
             if (response.status === 200) {
                 console.log('Task toggled successfully');
-                onCompletionToggle(taskId);  // Notify the parent of the change
+                const newStatus = !isComplete
+                onCompletionToggle(itemId, newStatus);  // Notify the parent of the change
             } else {
                 console.error('Failed to toggle task status:', response.data.message);
             }
@@ -36,14 +37,14 @@ export default function TaskActions({ taskId, listId, parentId = null, depth, on
             return;
         }
 
-        const url = parentId ? `/items/${taskId}?parent_id=${parentId}` : `/items/${taskId}`;
+        const url = parentId ? `/items/${itemId}?parent_id=${parentId}` : `/items/${itemId}`;
 
         try {
             const response = await fetchRequest(url, 'DELETE');
 
             if (response.status === 200) {
                 console.log('Task deleted successfully');
-                onTaskDeleted(taskId);
+                onTaskDeleted(itemId, !isComplete);  // Notify the parent of the change
             } else {
                 console.error('Failed to delete task:', response.data.message);
             }
@@ -57,8 +58,24 @@ export default function TaskActions({ taskId, listId, parentId = null, depth, on
     return (
         <div className="d-flex justify-content-end">
             <OverlayTrigger overlay={<Tooltip id="tooltip-complete">{isComplete ? "Mark as Incomplete" : "Mark as Complete"}</Tooltip>}>
-                <Button variant="link" className="btn-sm p-0 text-decoration-none mr-3" onClick={handleTaskCompletion}>
-                    <BsCheckCircle size={16} color={isComplete ? "#0056b3" : "#b0c4de"} /> {/* Deep blue for completed, light blue for incomplete */}
+                <Button 
+                    variant="link" 
+                    className="btn-sm p-0 text-decoration-none mr-3" 
+                    onClick={handleTaskCompletion}
+                >
+                    {isComplete ? (
+                        <BsCheckCircle 
+                            size={16} 
+                            color="#0056b3" 
+                            style={{ textDecoration: "line-through" }}  // Adding a line-through for completed tasks
+                        />
+                    ) : (
+                        <BsCheckCircle 
+                            size={16} 
+                            color="#0056b3" 
+                            style={{ opacity: 0.3 }}  // Reduce opacity for incomplete tasks
+                        />
+                    )}
                 </Button>
             </OverlayTrigger>
 
@@ -90,7 +107,7 @@ export default function TaskActions({ taskId, listId, parentId = null, depth, on
                 <Modal.Body>
                     <AddTask
                         listId={listId}
-                        parentId={taskId} 
+                        parentId={itemId} 
                         onTaskAdded={onTaskAdded}
                         onClose={handleCloseAddSubtaskModal}
                     />

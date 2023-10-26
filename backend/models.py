@@ -235,14 +235,28 @@ class TodoItem(db.Model):
 
     def mark_complete(self):
         """
-        Marks the task and all its subtasks as complete.
+        Marks the task and possibly its subtasks as complete or incomplete based on conditions.
         """
-        # Mark the current task as complete
+        # Toggle the current task's completion status
         self.is_complete = not self.is_complete
 
-        # Recursively mark all children tasks as complete
-        for child in self.children:
-            child.mark_complete()
+        # If the task was marked as complete
+        if self.is_complete:
+            # Recursively mark all children tasks as complete
+            for child in self.children:
+                if (
+                    not child.is_complete
+                ):  # Only toggle children that aren't already complete
+                    child.mark_complete()
+
+            # Check siblings and if all are complete, set the parent as complete
+            # Make sure there's a parent and more than one sibling
+            if self.parent and len(self.parent.children) > 1:
+                all_siblings_complete = all(
+                    sibling.is_complete for sibling in self.parent.children
+                )
+                if all_siblings_complete:
+                    self.parent.is_complete = True
 
     def get_max_subtree_depth(self):
         if not self.children:

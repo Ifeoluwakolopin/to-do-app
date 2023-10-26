@@ -5,12 +5,18 @@ import Title from './Title';
 import TaskActions from './TaskActions';
 import { useApi } from '../contexts/ApiProvider';
 
-export default function TaskComponent({ item, listId, onTaskAdded, onTaskDeleted, parentId = null }) {
+export default function TaskComponent({ 
+    item, 
+    listId, 
+    onTaskAdded, 
+    onTaskDeleted, 
+    parentId = null, 
+    isComplete, 
+    onCompletionToggle 
+}) {
     const [showSubtasks, setShowSubtasks] = useState(false);
-    const [isComplete, setIsComplete] = useState(item.is_complete);
-    const [isHovered, setIsHovered] = useState(false); // Handle hover state here
+    const [isHovered, setIsHovered] = useState(false);
     const { fetchRequest } = useApi();
-
 
     const handleSaveTitle = async (newTitle, endpoint) => {
         try {
@@ -24,24 +30,21 @@ export default function TaskComponent({ item, listId, onTaskAdded, onTaskDeleted
             if (response.status === 200) {
                 return response;
             } else {
-                console.error('Failed to update task title:', response.data.message);
+                console.error('Failed to update item title:', response.data.message);
             }
         } catch (error) {
-            console.error('An error occurred while updating task title:', error);
+            console.error('An error occurred while updating item title:', error);
         }
-    };
-
-    const handleTaskCompletionToggle = async (taskId) => {
-        setIsComplete(!isComplete);  // Update the local state
     };
 
     return (
         <>
             <Card 
-                className="mb-2 mx-1 shadow-sm" 
-                onMouseEnter={() => setIsHovered(true)}  // Handle hover state here
-                onMouseLeave={() => setIsHovered(false)} // Handle hover state here
+                className={`mb-2 mx-1 shadow-sm ${isHovered ? "hovered-card" : ""}`} 
+                onMouseEnter={() => setIsHovered(true)}
+                onMouseLeave={() => setIsHovered(false)}
             >
+
                 <Card.Body className="d-flex justify-content-between align-items-center py-2">
                     <Title
                         initialTitle={item.content}
@@ -49,18 +52,21 @@ export default function TaskComponent({ item, listId, onTaskAdded, onTaskDeleted
                         className="flex-grow-1 mr-2 text-break"
                     />
                     <div className="d-flex align-items-center">
-                        {isHovered && ( // 4. Conditionally render TaskActions based on hover state
+                        {isHovered && (
                             <TaskActions 
-                                taskId={item.id} 
+                                itemId={item.id}  // Updated from taskId to itemId
                                 listId={listId}
                                 depth={item.depth}
                                 parentId={parentId}  
                                 onTaskDeleted={onTaskDeleted} 
-                                onTaskAdded={(newSubtask) => onTaskAdded(newSubtask, item.id)}
-                                isComplete={isComplete}  // Pass the completion status
-                                onCompletionToggle={handleTaskCompletionToggle}  // Pass the handler
+                                onTaskAdded={(newSubitem) => onTaskAdded(newSubitem, item.id)}
+                                isComplete={item.is_complete}  // Pass the completion status of the specific item
+                                onCompletionToggle={(itemId, status) => {
+                                    onCompletionToggle(itemId, status);
+                                }}
                             />
-                            )}
+                        )}
+
                         {item.children && item.children.length > 0 && (
                             <Button
                                 variant="link"
@@ -81,6 +87,8 @@ export default function TaskComponent({ item, listId, onTaskAdded, onTaskDeleted
                                 onTaskAdded={onTaskAdded} 
                                 onTaskDeleted={onTaskDeleted}
                                 parentId={item.id}
+                                isComplete={item.is_complete}
+                                onCompletionToggle={onCompletionToggle}
                             />
                         </div>
                     ))
