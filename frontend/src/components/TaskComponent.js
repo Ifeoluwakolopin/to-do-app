@@ -4,6 +4,7 @@ import { BsChevronDown, BsChevronUp } from 'react-icons/bs';
 import Title from './Title';
 import TaskActions from './TaskActions';
 import { useApi } from '../contexts/ApiProvider';
+import { Draggable, Droppable } from 'react-beautiful-dnd';
 
 export default function TaskComponent({ 
     item, 
@@ -11,8 +12,8 @@ export default function TaskComponent({
     onTaskAdded, 
     onTaskDeleted, 
     parentId = null, 
-    isComplete, 
-    onCompletionToggle 
+    onCompletionToggle,
+    index
 }) {
     const [showSubtasks, setShowSubtasks] = useState(false);
     const [isHovered, setIsHovered] = useState(false);
@@ -38,12 +39,18 @@ export default function TaskComponent({
     };
 
     return (
-        <>
-            <Card 
-                className={`mb-2 mx-1 shadow-sm ${isHovered ? "hovered-card" : ""}`} 
-                onMouseEnter={() => setIsHovered(true)}
-                onMouseLeave={() => setIsHovered(false)}
-            >
+        <Draggable draggableId={`task-${item.id}`} index={index}>
+            {(provided) => (
+                <div 
+                    ref={provided.innerRef} 
+                    {...provided.draggableProps} 
+                    {...provided.dragHandleProps}
+                >
+                    <Card 
+                        className={`mb-2 mx-1 shadow-sm ${isHovered ? "hovered-card" : ""}`} 
+                        onMouseEnter={() => setIsHovered(true)}
+                        onMouseLeave={() => setIsHovered(false)}
+                    >
 
                 <Card.Body className="d-flex justify-content-between align-items-center py-2">
                     <Title
@@ -79,21 +86,35 @@ export default function TaskComponent({
                     </div>
                 </Card.Body>
                 {showSubtasks && item.children && item.children.length > 0 && (
-                    item.children.map((child) => (
-                        <div key={child.id} className="ml-4">
-                            <TaskComponent 
-                                item={child} 
-                                listId={listId} 
-                                onTaskAdded={onTaskAdded} 
-                                onTaskDeleted={onTaskDeleted}
-                                parentId={item.id}
-                                isComplete={item.is_complete}
-                                onCompletionToggle={onCompletionToggle}
-                            />
-                        </div>
-                    ))
-                )}
-            </Card>
-        </>
+                            <Droppable droppableId={`droppable-${item.id}`} type="TASK">
+                                {(provided) => (
+                                    <div 
+                                        ref={provided.innerRef} 
+                                        {...provided.droppableProps}
+                                        className="ml-4"
+                                    >
+                                        {item.children.map((child, index) => (
+                                            <TaskComponent 
+                                                key={child.id}
+                                                item={child} 
+                                                listId={listId} 
+                                                onTaskAdded={onTaskAdded} 
+                                                onTaskDeleted={onTaskDeleted}
+                                                parentId={item.id}
+                                                isComplete={item.is_complete}
+                                                onCompletionToggle={onCompletionToggle}
+                                                index={index}  // Pass the index
+                                            />
+                                        ))}
+                                        {provided.placeholder}
+                                    </div>
+                                )}
+                            </Droppable>
+                        )}
+                    </Card>
+                </div>
+            )}
+        </Draggable>
     );
+    
 }
