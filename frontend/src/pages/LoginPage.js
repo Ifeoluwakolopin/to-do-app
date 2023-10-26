@@ -4,6 +4,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import Body from '../components/Body';
 import { useApi } from '../contexts/ApiProvider';
 import { useAuth } from '../contexts/AuthContext';
+import { Link } from 'react-router-dom';
 import AlertComponent from '../components/AlertComponent';
 
 export default function LoginPage() {
@@ -60,11 +61,14 @@ export default function LoginPage() {
         <Body>
             <AlertComponent
                 show={showAlert}
-                message={alertMessage}
                 variant={alertVariant}
+                message={alertMessage}
                 onClose={() => setShowAlert(false)}
             />
             <LoginForm onLogin={handleLogin} />
+            <div className="mt-3 text-center">
+                Don't have an account? <Link to="/signup">Sign up here</Link>
+            </div>
         </Body>
     );
 }

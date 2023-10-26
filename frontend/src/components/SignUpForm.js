@@ -3,7 +3,7 @@ import { Form, Button, Container } from 'react-bootstrap';
 export default function SignUpForm({ onSignUp }) {
     return (
             <Container className="mt-5">
-                <h2 className="mb-4">Sign Up</h2>
+                <h2 className="mb-4 text-center">Sign Up</h2>
                 <Form onSubmit={onSignUp}>
                     <Form.Group className="mb-3">
                         <Form.Label>Username</Form.Label>

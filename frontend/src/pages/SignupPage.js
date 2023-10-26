@@ -4,6 +4,8 @@ import SignUpForm from '../components/SignUpForm';
 import { useApi } from '../contexts/ApiProvider';
 import { useNavigate } from 'react-router-dom';
 import AlertComponent from '../components/AlertComponent';
+import { Link } from 'react-router-dom';
+
 
 export default function SignUpPage() {
     const { fetchRequest } = useApi();
@@ -34,7 +36,7 @@ export default function SignUpPage() {
                 navigate('/login', { state: { fromSignup: true } });
             } else if (response.status === 409) {
                 setAlertVariant('danger');
-                setAlertMessage('Username already taken. Do you want to login instead?');
+                setAlertMessage(<span>Username already taken. Do you want to <Link to="/login">login</Link> instead?</span>);
                 setShowAlert(true);
             } else {
                 setAlertVariant('danger');
@@ -57,6 +59,9 @@ export default function SignUpPage() {
                 onClose={() => setShowAlert(false)}
             />
             <SignUpForm onSignUp={handleSignUp} />
+            <div className="mt-3 text-center">
+                Already have an account? <Link to="/login">Login here</Link>
+            </div>
         </Body>
     );
 }

@@ -53,7 +53,7 @@ export default function ListCard({ list, onListDeleted }) {
     };
 
     return (
-        <Card className="w-100">
+        <Card className="w-100" style={{ maxWidth: '650px' }}>
             <Card.Header>
                 <Row className="align-items-center">
                     <Col>

@@ -82,7 +82,7 @@ export default function ListCardArea({ lists, onListDeleted }) {
             <DragDropContext onDragEnd={handleDragEnd}>
                 <Row>
                     {lists.slice(startIndex, endIndex).map(list => (
-                        <Col key={list.id} sm={12} md={lists.length === 1 ? 12 : lists.length === 2 ? 6 : 4} className="mb-3">
+                        <Col key={list.id} className="mb-3 mx-auto" style={{ maxWidth: '650px' }}>
                             <ListCard list={list} onListDeleted={onListDeleted} />
                         </Col>
                     ))}

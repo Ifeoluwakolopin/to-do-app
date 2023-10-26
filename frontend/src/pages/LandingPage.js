@@ -16,6 +16,10 @@ export default function LandingPage() {
         navigate("/signup");
     };
 
+    const handleLoginClick = () => {
+        navigate("/login");
+    };
+
     return (
         <div style={{ 
             position: 'relative', 
@@ -55,9 +59,15 @@ export default function LandingPage() {
                 }}>
                     Organize your tasks and sub-tasks with ease.
                 </p>
-                <Button variant="primary" onClick={handleGetStartedClick} style={{ fontSize: '1.5em', padding: '10px 30px' }}>
-                    Get Started
-                </Button>
+                {/* Adjust button styles for side-by-side display */}
+                <div style={{ display: 'flex', justifyContent: 'center', gap: '10px' }}>
+                    <Button variant="primary" onClick={handleGetStartedClick} style={{ fontSize: '1.5em', padding: '10px 30px' }}>
+                        Get Started
+                    </Button>
+                    <Button variant="secondary" onClick={handleLoginClick} style={{ fontSize: '1.5em', padding: '10px 30px' }}>
+                        Login
+                    </Button>
+                </div>
             </Container>
         </div>
     );
