@@ -170,20 +170,21 @@ def complete_item(id):
     return jsonify(item.serialize_with_children()), 200
 
 
-@main_api.route("/items/<int:id>/move", methods=["PUT"])
+@main_api.route("/move_item/<int:id>/", methods=["PUT"])
 @login_required
 def move_task(id):
     data = request.json
     new_list_id = data["list_id"]
     new_parent_id = data.get("parent_id")
 
+    # Step 1: Retrieve the item based solely on its ID and the owner.
+    # We don't use the new list ID or parent ID for this query.
     item = (
-        TodoItem.query.join(TodoList, TodoItem.list_id == TodoList.id)
-        .filter(TodoItem.id == id, TodoList.owner_id == current_user.id)
+        TodoItem.query.filter_by(id=id)
+        .filter(TodoList.owner_id == current_user.id)
         .first_or_404()
     )
 
-    # Calculate the maximum depth of the item's subtree
     max_subtree_depth = item.get_max_subtree_depth()
 
     # If moving to another item
@@ -214,6 +215,8 @@ def move_task(id):
 
     item.move_and_update_depth(new_list_id, new_parent_id, new_depth)
     db.session.commit()
+
+    return jsonify(item.serialize_with_children()), 200
 
     return jsonify(item.serialize_with_children()), 200
 
