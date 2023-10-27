@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Card, ListGroup, Row, Col } from 'react-bootstrap';
-import TaskItem from '../components/TaskItem';
+import TaskComponent from '../components/TaskComponent';
 import ListActions from './ListActions';
 import Title from './Title';
 import { useApi } from '../contexts/ApiProvider';
@@ -26,10 +26,28 @@ export default function ListCard({ list, onListDeleted }) {
         }
     };
 
-    const handleTaskAdded = (newTask) => {
-        // Update the items state with the new task
-        setItems([...items, newTask]);
+    const handleTaskAdded = (newTask, parentId = null) => {
+        const addRecursive = (tasks, task, parentId) => {
+            if (!parentId) return [...tasks, task];
+    
+            return tasks.map(existingTask => {
+                if (existingTask.id === parentId) {
+                    return {
+                        ...existingTask,
+                        children: existingTask.children ? [...existingTask.children, task] : [task]
+                    };
+                } else {
+                    return {
+                        ...existingTask,
+                        children: existingTask.children ? addRecursive(existingTask.children, task, parentId) : existingTask.children
+                    };
+                }
+            });
+        };
+    
+        setItems(prevItems => addRecursive(prevItems, newTask, parentId));
     };
+    
 
     const handleTaskDeleted = (deletedTaskId) => {
         const deleteRecursive = (tasks, taskId) => {
@@ -50,6 +68,36 @@ export default function ListCard({ list, onListDeleted }) {
         // Assuming the parent maintains a tasks/items state:
         setItems(prevItems => deleteRecursive(prevItems, deletedTaskId));
     };
+
+    const markChildrenComplete = (items) => {
+        return items.map(singleItem => ({
+            ...singleItem,
+            is_complete: true,
+            children: singleItem.children ? markChildrenComplete(singleItem.children) : []
+        }));
+    };
+
+    const handleTaskCompletionToggle = (taskId, status) => {
+        const toggleRecursive = (tasks, taskId, status) => {
+            return tasks.map(task => {
+                if (task.id === taskId) {
+                    return {
+                        ...task,
+                        is_complete: status,
+                        children: status ? markChildrenComplete(task.children || []) : task.children
+                    };
+                } else {
+                    return {
+                        ...task,
+                        children: task.children ? toggleRecursive(task.children, taskId, status) : task.children
+                    };
+                }
+            });
+        };
+    
+        setItems(prevItems => toggleRecursive(prevItems, taskId, status));
+    };
+    
 
     return (
         <Card className="w-100" style={{ maxWidth: '650px' }}>
@@ -73,12 +121,15 @@ export default function ListCard({ list, onListDeleted }) {
             </Card.Header>
             <ListGroup variant="flush" className="p-3">
                 {items.map((item, index) => (
-                    <TaskItem 
+                    <TaskComponent 
                         key={item.id} 
                         item={item} 
                         listId={list.id}
+                        onTaskAdded={handleTaskAdded}
                         onTaskDeleted={handleTaskDeleted} 
+                        onCompletionToggle={handleTaskCompletionToggle} 
                     />
+
                 ))}
             </ListGroup>
         </Card>
