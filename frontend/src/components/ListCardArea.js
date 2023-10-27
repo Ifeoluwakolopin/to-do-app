@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { Container, Row, Col, Button } from 'react-bootstrap';
 import ListCard from '../components/ListCard';
 
-export default function ListCardArea({ lists, selectedListId, onSelectList, onListDeleted }) {
+export default function ListCardArea({ lists, selectedListId, onSelectList, onListDeleted, onTaskMoved }) {
+
     const itemsPerPage = 2;
     const [currentPage, setCurrentPage] = useState(0);
 
@@ -41,7 +42,12 @@ export default function ListCardArea({ lists, selectedListId, onSelectList, onLi
             <Row>
                 {displayedLists.map(list => (
                     <Col key={list.id} className="mb-3 mx-auto" style={{ maxWidth: '650px' }}>
-                        <ListCard list={list} onListDeleted={onListDeleted} />
+                        <ListCard 
+                            list={list} 
+                            onListDeleted={onListDeleted} 
+                            onTaskMoved={onTaskMoved} 
+                            selectedListId={selectedListId}
+                        />
                     </Col>
                 ))}
             </Row>

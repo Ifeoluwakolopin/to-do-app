@@ -6,7 +6,6 @@ import { useApi } from '../contexts/ApiProvider';
 import { Container, Row, Col } from 'react-bootstrap';
 import { FaBars } from 'react-icons/fa';
 
-
 export default function HomePage() {
     const [lists, setLists] = useState([]);
     const [displayedLists, setDisplayedLists] = useState([]);
@@ -14,6 +13,7 @@ export default function HomePage() {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const { fetchRequest } = useApi();
 
+    
     useEffect(() => {
         const fetchLists = async () => {
             try {
@@ -33,6 +33,15 @@ export default function HomePage() {
 
         fetchLists();
     }, [fetchRequest, selectedListId]);
+
+    useEffect(() => {
+        if (!selectedListId) {
+            setDisplayedLists(lists);
+        } else {
+            const updatedDisplayedList = lists.find(list => list.id === selectedListId);
+            setDisplayedLists([updatedDisplayedList]);
+        }
+    }, [lists, selectedListId]);
 
     const handleSelectList = (listId) => {
         setSelectedListId(listId);
@@ -57,11 +66,37 @@ export default function HomePage() {
             setDisplayedLists(lists.filter(list => list.id !== deletedListId));
         }
     };
+    
+    const handleTaskMoved = async (movedTaskId, targetListId) => {
+        // ... [rest of the code for moving the task locally]
+    
+        // Fetch lists again to refresh data
+        try {
+            const response = await fetchRequest('/lists', 'GET');
+            if (response.status === 200) {
+                setLists(response.data);
+                if (!selectedListId) {
+                    setDisplayedLists(response.data);
+                } else {
+                    const updatedDisplayedList = response.data.find(list => list.id === selectedListId);
+                    setDisplayedLists([updatedDisplayedList]);
+                }
+            } else {
+                console.error('Failed to fetch lists:', response.data.message);
+            }
+        } catch (error) {
+            console.error('An error occurred:', error);
+        }
+    };    
+
+    useEffect(() => {
+        console.log('displayedLists:', displayedLists);
+    }, [displayedLists]);
 
     return (
         <Container fluid className="home-page-content py-5 position-relative">
             {!isSidebarOpen && (
-                <div style={{ position: 'absolute', top: '20px', left: '15px' }}> {/* Adjusted positioning here */}
+                <div style={{ position: 'absolute', top: '20px', left: '15px' }}>
                     <FaBars 
                         size={30} 
                         onClick={() => setIsSidebarOpen(true)} 
@@ -87,12 +122,15 @@ export default function HomePage() {
                     </Row>
                     <Row>
                         <Col className="d-flex justify-content-center">
-                        <ListCardArea 
+                        <ListCardArea
+                            key={Date.now()}
                             lists={displayedLists} 
                             selectedListId={selectedListId} 
-                            onSelectList={handleSelectList} 
+                            onSelectList={handleSelectList}
+                            onTaskMoved={handleTaskMoved}
                             onListDeleted={handleListDeleted}
-                            />
+                        />
+
                         </Col>
                     </Row>
                 </Col>
