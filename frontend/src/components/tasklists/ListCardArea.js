@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Container, Row, Col, Button } from 'react-bootstrap';
-import ListCard from '../components/ListCard';
+import ListCard from './ListCard';
 
 export default function ListCardArea({ lists, selectedListId, onSelectList, onListDeleted, onTaskMoved }) {
 

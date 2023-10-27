@@ -2,10 +2,10 @@ import React from 'react';
 import { Container } from 'react-bootstrap'; 
 
 // Import the button components
-import AddTaskButton from './actions/AddTaskButton';
-import CompleteTaskButton from './actions/CompleteTaskButton';
-import DeleteTaskButton from './actions/DeleteTaskButton';
-import MoveTaskButton from './actions/MoveTaskButton';
+import AddTaskButton from '../buttons/AddTaskButton';
+import CompleteTaskButton from '../buttons/CompleteTaskButton';
+import DeleteTaskButton from '../buttons/DeleteTaskButton';
+import MoveTaskButton from '../buttons/MoveTaskButton';
 
 export default function TaskActions({ 
     itemId, 

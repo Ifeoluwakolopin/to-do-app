@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import AddTask from '../AddTask';
+import AddTask from '../tasks/AddTask';
 import { OverlayTrigger, Tooltip, Button, Modal } from 'react-bootstrap';
 import { FaPlusCircle } from 'react-icons/fa'; // Using a more prominent "plus" icon
 

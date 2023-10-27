@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import AddList from '../components/AddList';
-import ListCardArea from '../components/ListCardArea';
+import ListCardArea from '../components/tasklists/ListCardArea';
 import Sidebar from '../components/Sidebar';
 import { useApi } from '../contexts/ApiProvider';
 import { Container, Row, Col } from 'react-bootstrap';

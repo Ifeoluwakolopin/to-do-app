@@ -1,6 +1,6 @@
 import React from 'react';
-import AddTaskButton from './actions/AddTaskButton'; // adjust path if needed
-import DeleteListButton from './actions/DeleteListButton'; // adjust path if needed
+import AddTaskButton from '../buttons/AddTaskButton'; // adjust path if needed
+import DeleteListButton from '../buttons/DeleteListButton'; // adjust path if needed
 
 export default function ListActions({ listId, onTaskAdded, onListDeleted }) {
     return (

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Form, Button } from 'react-bootstrap';
-import { useApi } from '../contexts/ApiProvider';
-import AlertComponent from './AlertComponent'; // Step 1: Import AlertComponent
+import { useApi } from '../../contexts/ApiProvider';
+import AlertComponent from '../AlertComponent'; // Step 1: Import AlertComponent
 
 export default function AddTask({ listId, parentId, onTaskAdded }) {
     const { fetchRequest } = useApi();
