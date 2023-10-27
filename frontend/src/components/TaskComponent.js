@@ -53,6 +53,7 @@ export default function TaskComponent({
     };
 
     const markChildrenComplete = (items) => {
+        console.log("Marking children as complete");
         return items.map(singleItem => ({
             ...singleItem,
             is_complete: true,
@@ -61,11 +62,12 @@ export default function TaskComponent({
     };
     
     const handleItemCompletionToggle = (itemId, status) => {
-        console.log("Toggling item completion:", itemId, status);
+        console.log("Top-level toggling item completion:", itemId, status);
     
         const toggleRecursive = (items, itemId, status) => {
             return items.map(singleItem => {
                 if (singleItem.id === itemId) {
+                    console.log(`Setting item ${itemId} status to ${status}`);
                     return {
                         ...singleItem,
                         is_complete: status,
@@ -80,14 +82,14 @@ export default function TaskComponent({
         };
     
         const newItems = toggleRecursive(items, itemId, status);
+        console.log("Updated items list after toggle:", newItems);
         setItems(newItems);
     
-        // Check if root item
         if (itemId === item.id) {
+            console.log(`Root item ${itemId} status changed to ${status}`);
             setIsComplete(status);
         }
     
-        // If it's a subtask, check siblings and parent status
         if (parentId) {
             checkAndToggleParentStatus(itemId, status, newItems);
         }
@@ -95,11 +97,16 @@ export default function TaskComponent({
     
     const checkAndToggleParentStatus = (itemId, itemStatus, itemsList) => {
         const siblingStatus = itemsList.filter(singleItem => singleItem.id !== itemId).every(singleItem => singleItem.is_complete);
+        console.log(`Siblings (excluding item ${itemId}) completion status:`, siblingStatus);
         const allSiblingsComplete = siblingStatus && itemStatus;
-        
+    
+        console.log(`Item ${itemId} and all its siblings complete status:`, allSiblingsComplete);
+    
         if (allSiblingsComplete) {
+            console.log(`Setting parent of item ${itemId} status to true`);
             onCompletionToggle(parentId, true);
         } else {
+            console.log(`Setting parent of item ${itemId} status to false`);
             onCompletionToggle(parentId, false);
         }
     };

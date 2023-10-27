@@ -8,16 +8,16 @@ export default function CompleteTaskButton({ isComplete, onCompletionToggle, ite
 
     const handleTaskCompletion = async () => {
         const url = `/items/${itemId}/complete`;
-
+    
         try {
             const response = await fetchRequest(url, 'PUT');
             if (response.status === 200) {
-                const newStatus = !isComplete;
-                onCompletionToggle(itemId, newStatus);
+                return !isComplete;
             }
         } catch (error) {
             console.error('An error occurred:', error);
         }
+        return undefined;
     };
 
     return (
@@ -25,12 +25,11 @@ export default function CompleteTaskButton({ isComplete, onCompletionToggle, ite
             <Button 
                 variant="link" 
                 className="btn-sm p-0 text-decoration-none mr-3" 
-                onClick={ () => {
-                    // Call the backend to change completion status
-                    handleTaskCompletion();
-                    // Notify parent of the change
-                    const newStatus = !isComplete;
-                    onCompletionToggle(itemId, newStatus);
+                onClick={ async () => {
+                    const updatedStatus = await handleTaskCompletion(); 
+                    if(updatedStatus !== undefined) {
+                        onCompletionToggle(itemId, updatedStatus);
+                    }
                 }}
             >
                 {isComplete ? (
