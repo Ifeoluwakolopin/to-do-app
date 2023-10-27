@@ -6,11 +6,11 @@ import { FaShare } from 'react-icons/fa';
 export default function MoveTaskButton({ taskId, currentListId, onTaskMoved }) {
     const [lists, setLists] = useState([]);
     const [showModal, setShowModal] = useState(false);
-    const [isLoading, setIsLoading] = useState(false); // Track if data is being fetched
+    const [isLoading, setIsLoading] = useState(false);
     const { fetchRequest } = useApi();
 
     const fetchLists = async () => {
-        setIsLoading(true); // Set loading to true before fetching
+        setIsLoading(true);
         try {
             const response = await fetchRequest('/lists', 'GET');
             if (response.status === 200) {
@@ -20,7 +20,7 @@ export default function MoveTaskButton({ taskId, currentListId, onTaskMoved }) {
         } catch (error) {
             console.error('Error fetching lists:', error);
         }
-        setIsLoading(false); // Set loading to false after fetching is done
+        setIsLoading(false);
     };
 
     const handleShowModal = async () => {
@@ -30,9 +30,10 @@ export default function MoveTaskButton({ taskId, currentListId, onTaskMoved }) {
 
     const handleMoveTask = async (targetListId) => {
         try {
-            const response = await fetchRequest(`/tasks/${taskId}/move`, 'PUT', { newListId: targetListId });
+            const response = await fetchRequest(`/move_item/${taskId}`, 'PUT', { new_list_id : targetListId });
             if (response.status === 200) {
                 onTaskMoved(taskId, targetListId);
+                console.log('Task moved successfully');
                 setShowModal(false);
             } else {
                 console.error('Failed to move task:', response.data.message);
@@ -59,12 +60,12 @@ export default function MoveTaskButton({ taskId, currentListId, onTaskMoved }) {
                 <Modal.Body>
                     {lists.map(list => (
                         <Button 
-                            variant="link" 
+                            variant="outline-primary"  // Change to blue outline
                             key={list.id} 
                             onClick={() => handleMoveTask(list.id)}
-                            className="d-block mb-2"
+                            className="d-block mb-2 w-100"
                         >
-                            {list.name}
+                            {list.title}
                         </Button>
                     ))}
                 </Modal.Body>

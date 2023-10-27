@@ -170,11 +170,11 @@ def complete_item(id):
     return jsonify(item.serialize_with_children()), 200
 
 
-@main_api.route("/move_item/<int:id>/", methods=["PUT"])
+@main_api.route("/move_item/<int:id>", methods=["PUT"])
 @login_required
 def move_task(id):
     data = request.json
-    new_list_id = data["list_id"]
+    new_list_id = data["new_list_id"]
 
     # Retrieve the item based on its ID and ensure it belongs to the current user.
     item = (
@@ -183,7 +183,6 @@ def move_task(id):
         .first_or_404()
     )
 
-    print("Old item:", item.serialize_with_children())
     # Use the move method to update the item's list_id, parent_id, and depth.
     item.move(new_list_id)
     db.session.commit()
@@ -193,7 +192,6 @@ def move_task(id):
         .filter(TodoItem.id == id, TodoList.owner_id == current_user.id)
         .first_or_404()
     )
-    print("New Item:", item.serialize_with_children())
     return jsonify(item.serialize_with_children()), 200
 
 
