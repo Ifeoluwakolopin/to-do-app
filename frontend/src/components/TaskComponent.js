@@ -11,7 +11,8 @@ export default function TaskComponent({
     onTaskAdded, 
     onTaskDeleted, 
     parentId = null, 
-    onCompletionToggle
+    onCompletionToggle,
+    onTaskMoved
 }) {
     const [showSubtasks, setShowSubtasks] = useState(false);
     const [isHovered, setIsHovered] = useState(false);
@@ -62,6 +63,7 @@ export default function TaskComponent({
                                 onCompletionToggle={(itemId, status) => {
                                     onCompletionToggle(itemId, status);
                                 }}
+                                onTaskMoved={onTaskMoved}
                             />
                         )}
 
@@ -87,6 +89,7 @@ export default function TaskComponent({
                                 onTaskDeleted={onTaskDeleted}
                                 parentId={item.id}
                                 onCompletionToggle={onCompletionToggle}
+                                onTaskMoved={onTaskMoved}
                             />
                         ))}
                     </div>

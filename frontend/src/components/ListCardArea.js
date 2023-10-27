@@ -1,10 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Button } from 'react-bootstrap';
 import ListCard from '../components/ListCard';
 
-export default function ListCardArea({ lists, selectedListId, onSelectList, onListDeleted }) {
+export default function ListCardArea({ initialLists, selectedListId, onSelectList, onListDeleted, onTaskMoved }) {
     const itemsPerPage = 2;
     const [currentPage, setCurrentPage] = useState(0);
+    
+    const [lists, setLists] = useState(() => initialLists || []);
+
+    useEffect(() => {
+        setLists(initialLists || []);
+    }, [initialLists]);
+    
 
     const handleNext = () => {
         if (selectedListId) {
@@ -36,12 +43,40 @@ export default function ListCardArea({ lists, selectedListId, onSelectList, onLi
 
     const currentIndex = lists.findIndex(list => list.id === selectedListId);
 
+    const handleTaskMoved = (taskId, sourceListId, destListId) => {
+        if (sourceListId === destListId) return;
+
+        let taskToMove = null;
+        const sourceListTasks = lists.find(l => l.id === sourceListId).items;
+        taskToMove = sourceListTasks.find(t => t.id === taskId);
+
+        // Remove the task from the source list
+        const updatedSourceList = lists.map(l => {
+            if (l.id === sourceListId) {
+                return { ...l, items: l.items.filter(t => t.id !== taskId) };
+            }
+            return l;
+        });
+
+        // Add the task to the destination list
+        const updatedDestList = updatedSourceList.map(l => {
+            if (l.id === destListId) {
+                return { ...l, items: [...l.items, taskToMove] };
+            }
+            return l;
+        });
+
+        setLists(updatedDestList);
+        onTaskMoved(taskId, sourceListId, destListId);
+    };
+
+
     return (
         <Container className="py-4" style={{ backgroundColor: "#f7f7f7" }}>
             <Row>
                 {displayedLists.map(list => (
                     <Col key={list.id} className="mb-3 mx-auto" style={{ maxWidth: '650px' }}>
-                        <ListCard list={list} onListDeleted={onListDeleted} />
+                        <ListCard list={list} onListDeleted={onListDeleted} onTaskMoved={handleTaskMoved} />
                     </Col>
                 ))}
             </Row>

@@ -15,12 +15,15 @@ export default function TaskActions({
     onTaskAdded, 
     onTaskDeleted, 
     isComplete, 
-    onCompletionToggle 
+    onCompletionToggle,
+    onTaskMoved
 }) {
 
     const handleTaskMoved = (taskId, targetListId) => {
-        // Implement any logic needed after a task is moved
-        // For instance, you might want to refresh the tasks or lists
+        // Bubble up the event
+        if (onTaskMoved) {
+            onTaskMoved(taskId, targetListId);
+        }
     };
 
     return (

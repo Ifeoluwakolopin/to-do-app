@@ -58,6 +58,36 @@ export default function HomePage() {
         }
     };
 
+    const handleTaskMoved = (taskId, sourceListId, destListId) => {
+        if (sourceListId === destListId) return;
+
+        let taskToMove = null;
+        const sourceListTasks = lists.find(l => l.id === sourceListId).items;
+        taskToMove = sourceListTasks.find(t => t.id === taskId);
+
+        // Remove the task from the source list
+        const updatedSourceList = lists.map(l => {
+            if (l.id === sourceListId) {
+                return { ...l, items: l.items.filter(t => t.id !== taskId) };
+            }
+            return l;
+        });
+
+        // Add the task to the destination list
+        const updatedDestList = updatedSourceList.map(l => {
+            if (l.id === destListId) {
+                return { ...l, items: [...l.items, taskToMove] };
+            }
+            return l;
+        });
+
+        setLists(updatedDestList);
+        if(!selectedListId) {
+            setDisplayedLists(updatedDestList);
+        }
+    };
+    
+
     return (
         <Container fluid className="home-page-content py-5 position-relative">
             {!isSidebarOpen && (
@@ -88,11 +118,12 @@ export default function HomePage() {
                     <Row>
                         <Col className="d-flex justify-content-center">
                         <ListCardArea 
-                            lists={displayedLists} 
+                            initialLists={displayedLists} 
                             selectedListId={selectedListId} 
                             onSelectList={handleSelectList} 
                             onListDeleted={handleListDeleted}
-                            />
+                            onTaskMoved={handleTaskMoved}
+                        />
                         </Col>
                     </Row>
                 </Col>
