@@ -61,20 +61,22 @@ export default function AddList({ onListAdded }) {
                 onClose={() => setShowAlert(false)}
             />
             <Row className="justify-content-center">
-                <Col xs={12} md={6} lg={4} className="d-flex">
-                    <Form.Control 
-                        type="text" 
-                        placeholder="Add a new list..." 
-                        className="me-2"  // adds margin to the right of the element
-                        value={title}
-                        onChange={e => setTitle(e.target.value)}
-                        onKeyPress={handleKeyPress} // Add this event handler
-                    />
-                    <Button variant="outline-secondary" onClick={handleAddList}>
-                        <FaPlus />
-                    </Button>
-                </Col>
-            </Row>
+    <Col xs={12} md={8} lg={6} className="d-flex">
+        <Form.Control 
+            type="text" 
+            placeholder="Add a new list..." 
+            className="me-2"
+            value={title}
+            onChange={e => setTitle(e.target.value)}
+            onKeyPress={handleKeyPress}
+            size="lg"
+        />
+        <Button variant="outline-secondary" onClick={handleAddList}>
+            <FaPlus />
+        </Button>
+    </Col>
+</Row>
+
         </div>
     );
 }

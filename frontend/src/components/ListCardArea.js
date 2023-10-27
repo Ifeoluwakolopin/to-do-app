@@ -42,7 +42,8 @@ export default function ListCardArea({ lists, selectedListId, onSelectList, onLi
             <Row>
                 {displayedLists.map(list => (
                     <Col key={list.id} className="mb-3 mx-auto" style={{ maxWidth: '650px' }}>
-                        <ListCard 
+                        <ListCard
+                        key={Date.now()}
                             list={list} 
                             onListDeleted={onListDeleted} 
                             onTaskMoved={onTaskMoved} 
