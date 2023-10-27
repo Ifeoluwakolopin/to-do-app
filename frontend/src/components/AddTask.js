@@ -55,9 +55,10 @@ export default function AddTask({ listId, parentId, onTaskAdded }) {
                 variant={alertVariant}
                 message={alertMessage}
                 onClose={() => setAlertShow(false)}
+                small
+                style={{ marginBottom: '0px' }} // Adjust this value to your preference
             />
-
-            <Form onSubmit={handleAddTask}>
+            <Form onSubmit={handleAddTask} style={{ marginTop: '0' }}>
                 <Form.Group>
                     <Form.Control
                         type="text"
@@ -66,7 +67,7 @@ export default function AddTask({ listId, parentId, onTaskAdded }) {
                         onChange={(e) => setContent(e.target.value)}
                     />
                 </Form.Group>
-                <div className="mt-2">
+                <div className="mt-3">
                     <Button variant="primary" type="submit">
                         Add Task
                     </Button>
@@ -74,4 +75,4 @@ export default function AddTask({ listId, parentId, onTaskAdded }) {
             </Form>
         </div>
     );
-}
+}    
