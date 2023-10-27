@@ -14,8 +14,6 @@ export default function HomePage() {
     const { fetchRequest } = useApi();
 
     
-    
-
     useEffect(() => {
         const fetchLists = async () => {
             try {
@@ -70,32 +68,30 @@ export default function HomePage() {
     };
     
     const handleTaskMoved = async (movedTaskId, targetListId) => {
-        // Update the lists based on the moved task
-        const updatedLists = lists.map(list => {
-            if (list.id === targetListId) {
-                const taskObject = lists.reduce((acc, currList) => {
-                    const foundTask = currList.items.find(t => t.id === movedTaskId);
-                    return foundTask ? foundTask : acc;
-                }, null);
+        // ... [rest of the code for moving the task locally]
     
-                if (taskObject) {
-                    return { ...list, items: [...list.items, taskObject] };
+        // Fetch lists again to refresh data
+        try {
+            const response = await fetchRequest('/lists', 'GET');
+            if (response.status === 200) {
+                setLists(response.data);
+                if (!selectedListId) {
+                    setDisplayedLists(response.data);
+                } else {
+                    const updatedDisplayedList = response.data.find(list => list.id === selectedListId);
+                    setDisplayedLists([updatedDisplayedList]);
                 }
-            } else if (list.items.some(task => task.id === movedTaskId)) {
-                return { ...list, items: list.items.filter(task => task.id !== movedTaskId) };
+            } else {
+                console.error('Failed to fetch lists:', response.data.message);
             }
-            return { ...list };
-        });
-    
-        setLists(updatedLists);
-        const response = await fetchRequest('/lists', 'GET');
-        if (response.status === 200) {
-            setLists(response.data);
-            if(!selectedListId) {
-                setDisplayedLists(response.data);
-            }
+        } catch (error) {
+            console.error('An error occurred:', error);
         }
-    };
+    };    
+
+    useEffect(() => {
+        console.log('displayedLists:', displayedLists);
+    }, [displayedLists]);
 
     return (
         <Container fluid className="home-page-content py-5 position-relative">
@@ -126,13 +122,15 @@ export default function HomePage() {
                     </Row>
                     <Row>
                         <Col className="d-flex justify-content-center">
-                        <ListCardArea 
-                            initialLists={displayedLists} 
+                        <ListCardArea
+                            key={Date.now()}
+                            lists={displayedLists} 
                             selectedListId={selectedListId} 
                             onSelectList={handleSelectList}
                             onTaskMoved={handleTaskMoved}
                             onListDeleted={handleListDeleted}
                         />
+
                         </Col>
                     </Row>
                 </Col>

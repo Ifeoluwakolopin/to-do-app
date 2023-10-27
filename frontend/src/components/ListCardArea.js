@@ -1,17 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Container, Row, Col, Button } from 'react-bootstrap';
 import ListCard from '../components/ListCard';
 
-export default function ListCardArea({ initialLists, selectedListId, onSelectList, onListDeleted, onTaskMoved }) {
+export default function ListCardArea({ lists, selectedListId, onSelectList, onListDeleted, onTaskMoved }) {
+
     const itemsPerPage = 2;
     const [currentPage, setCurrentPage] = useState(0);
-    const [lists, setLists] = useState(() => initialLists || []);
-    
-    // You already have lists state to manage current lists, so you don't need the currentLists state
-    // Removing redundant useState and useEffect related to currentLists
-    useEffect(() => {
-        setLists(initialLists);
-    }, [initialLists]);
 
     const handleNext = () => {
         if (selectedListId) {
@@ -43,34 +37,6 @@ export default function ListCardArea({ initialLists, selectedListId, onSelectLis
 
     const currentIndex = lists.findIndex(list => list.id === selectedListId);
 
-    const updateListWithTask = (movedTaskId, targetListId) => {
-        // Get the task's original list
-        let sourceList = lists.find(l => l.items.some(t => t.id === movedTaskId));
-        if (!sourceList) return;
-        
-        let taskObject = sourceList.items.find(t => t.id === movedTaskId);
-    
-        // Remove the task from the source list
-        sourceList.items = sourceList.items.filter(t => t.id !== movedTaskId);
-    
-        // Update the target list with the new task and the source list without the moved task
-        const updatedLists = lists.map(l => {
-            if (l.id === targetListId) {
-                return { ...l, items: [...l.items, taskObject] };
-            }
-            if (l.id === sourceList.id) {
-                return sourceList;
-            }
-            return l;
-        });
-    
-        setLists(updatedLists);
-    
-        if (onTaskMoved) {
-            onTaskMoved(movedTaskId, targetListId);
-        }
-    };
-
     return (
         <Container className="py-4" style={{ backgroundColor: "#f7f7f7" }}>
             <Row>
@@ -79,7 +45,7 @@ export default function ListCardArea({ initialLists, selectedListId, onSelectLis
                         <ListCard 
                             list={list} 
                             onListDeleted={onListDeleted} 
-                            onTaskMoved={updateListWithTask} 
+                            onTaskMoved={onTaskMoved} 
                             selectedListId={selectedListId}
                         />
                     </Col>
