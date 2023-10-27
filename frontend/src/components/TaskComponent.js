@@ -20,6 +20,24 @@ export default function TaskComponent({
     const [items, setItems] = useState(item.children || []);
     const [isComplete, setIsComplete] = useState(item.is_complete);
 
+    const handleItemMove = (movedItemId, targetListId) => {
+        const moveRecursive = (items, itemId) => {
+            const updatedItems = items.filter(singleItem => singleItem.id !== itemId);
+            
+            if (updatedItems.length === items.length) {
+                return items.map(singleItem => ({
+                    ...singleItem,
+                    children: singleItem.children ? moveRecursive(singleItem.children, itemId) : []
+                }));
+            }
+            
+            return updatedItems;
+        };
+    
+        setItems(prevItems => moveRecursive(prevItems, movedItemId));
+        onTaskMoved(movedItemId, targetListId);  // Propagate the itemId and targetListId to parent
+    };    
+
     const handleItemAdded = (newItem, parentId) => {
         if (parentId === item.id) {
             setItems(prevItems => [...prevItems, newItem]);
@@ -161,6 +179,7 @@ export default function TaskComponent({
                                     }
                                 }}
                                 onTaskMoved={onTaskMoved}
+
                             />
                         )}
 
@@ -186,7 +205,7 @@ export default function TaskComponent({
                                 onTaskDeleted={handleItemDelete}
                                 parentId={item.id}
                                 onCompletionToggle={handleItemCompletionToggle}
-                                onTaskMoved={onTaskMoved}
+                                onTaskMoved={handleItemMove}
                             />
                         ))}
                     </div>

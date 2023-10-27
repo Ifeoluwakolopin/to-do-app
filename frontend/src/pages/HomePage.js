@@ -6,13 +6,15 @@ import { useApi } from '../contexts/ApiProvider';
 import { Container, Row, Col } from 'react-bootstrap';
 import { FaBars } from 'react-icons/fa';
 
-
 export default function HomePage() {
     const [lists, setLists] = useState([]);
     const [displayedLists, setDisplayedLists] = useState([]);
     const [selectedListId, setSelectedListId] = useState(null);
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const { fetchRequest } = useApi();
+
+    
+    
 
     useEffect(() => {
         const fetchLists = async () => {
@@ -33,6 +35,15 @@ export default function HomePage() {
 
         fetchLists();
     }, [fetchRequest, selectedListId]);
+
+    useEffect(() => {
+        if (!selectedListId) {
+            setDisplayedLists(lists);
+        } else {
+            const updatedDisplayedList = lists.find(list => list.id === selectedListId);
+            setDisplayedLists([updatedDisplayedList]);
+        }
+    }, [lists, selectedListId]);
 
     const handleSelectList = (listId) => {
         setSelectedListId(listId);
@@ -57,41 +68,39 @@ export default function HomePage() {
             setDisplayedLists(lists.filter(list => list.id !== deletedListId));
         }
     };
-
-    const handleTaskMoved = (taskId, sourceListId, destListId) => {
-        if (sourceListId === destListId) return;
-
-        let taskToMove = null;
-        const sourceListTasks = lists.find(l => l.id === sourceListId).items;
-        taskToMove = sourceListTasks.find(t => t.id === taskId);
-
-        // Remove the task from the source list
-        const updatedSourceList = lists.map(l => {
-            if (l.id === sourceListId) {
-                return { ...l, items: l.items.filter(t => t.id !== taskId) };
+    
+    const handleTaskMoved = async (movedTaskId, targetListId) => {
+        // Update the lists based on the moved task
+        const updatedLists = lists.map(list => {
+            if (list.id === targetListId) {
+                const taskObject = lists.reduce((acc, currList) => {
+                    const foundTask = currList.items.find(t => t.id === movedTaskId);
+                    return foundTask ? foundTask : acc;
+                }, null);
+    
+                if (taskObject) {
+                    return { ...list, items: [...list.items, taskObject] };
+                }
+            } else if (list.items.some(task => task.id === movedTaskId)) {
+                return { ...list, items: list.items.filter(task => task.id !== movedTaskId) };
             }
-            return l;
+            return { ...list };
         });
-
-        // Add the task to the destination list
-        const updatedDestList = updatedSourceList.map(l => {
-            if (l.id === destListId) {
-                return { ...l, items: [...l.items, taskToMove] };
+    
+        setLists(updatedLists);
+        const response = await fetchRequest('/lists', 'GET');
+        if (response.status === 200) {
+            setLists(response.data);
+            if(!selectedListId) {
+                setDisplayedLists(response.data);
             }
-            return l;
-        });
-
-        setLists(updatedDestList);
-        if(!selectedListId) {
-            setDisplayedLists(updatedDestList);
         }
     };
-    
 
     return (
         <Container fluid className="home-page-content py-5 position-relative">
             {!isSidebarOpen && (
-                <div style={{ position: 'absolute', top: '20px', left: '15px' }}> {/* Adjusted positioning here */}
+                <div style={{ position: 'absolute', top: '20px', left: '15px' }}>
                     <FaBars 
                         size={30} 
                         onClick={() => setIsSidebarOpen(true)} 
@@ -120,9 +129,9 @@ export default function HomePage() {
                         <ListCardArea 
                             initialLists={displayedLists} 
                             selectedListId={selectedListId} 
-                            onSelectList={handleSelectList} 
-                            onListDeleted={handleListDeleted}
+                            onSelectList={handleSelectList}
                             onTaskMoved={handleTaskMoved}
+                            onListDeleted={handleListDeleted}
                         />
                         </Col>
                     </Row>

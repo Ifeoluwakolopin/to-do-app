@@ -5,13 +5,13 @@ import ListCard from '../components/ListCard';
 export default function ListCardArea({ initialLists, selectedListId, onSelectList, onListDeleted, onTaskMoved }) {
     const itemsPerPage = 2;
     const [currentPage, setCurrentPage] = useState(0);
-    
     const [lists, setLists] = useState(() => initialLists || []);
-
-    useEffect(() => {
-        setLists(initialLists || []);
-    }, [initialLists]);
     
+    // You already have lists state to manage current lists, so you don't need the currentLists state
+    // Removing redundant useState and useEffect related to currentLists
+    useEffect(() => {
+        setLists(initialLists);
+    }, [initialLists]);
 
     const handleNext = () => {
         if (selectedListId) {
@@ -43,40 +43,45 @@ export default function ListCardArea({ initialLists, selectedListId, onSelectLis
 
     const currentIndex = lists.findIndex(list => list.id === selectedListId);
 
-    const handleTaskMoved = (taskId, sourceListId, destListId) => {
-        if (sourceListId === destListId) return;
-
-        let taskToMove = null;
-        const sourceListTasks = lists.find(l => l.id === sourceListId).items;
-        taskToMove = sourceListTasks.find(t => t.id === taskId);
-
+    const updateListWithTask = (movedTaskId, targetListId) => {
+        // Get the task's original list
+        let sourceList = lists.find(l => l.items.some(t => t.id === movedTaskId));
+        if (!sourceList) return;
+        
+        let taskObject = sourceList.items.find(t => t.id === movedTaskId);
+    
         // Remove the task from the source list
-        const updatedSourceList = lists.map(l => {
-            if (l.id === sourceListId) {
-                return { ...l, items: l.items.filter(t => t.id !== taskId) };
+        sourceList.items = sourceList.items.filter(t => t.id !== movedTaskId);
+    
+        // Update the target list with the new task and the source list without the moved task
+        const updatedLists = lists.map(l => {
+            if (l.id === targetListId) {
+                return { ...l, items: [...l.items, taskObject] };
+            }
+            if (l.id === sourceList.id) {
+                return sourceList;
             }
             return l;
         });
-
-        // Add the task to the destination list
-        const updatedDestList = updatedSourceList.map(l => {
-            if (l.id === destListId) {
-                return { ...l, items: [...l.items, taskToMove] };
-            }
-            return l;
-        });
-
-        setLists(updatedDestList);
-        onTaskMoved(taskId, sourceListId, destListId);
+    
+        setLists(updatedLists);
+    
+        if (onTaskMoved) {
+            onTaskMoved(movedTaskId, targetListId);
+        }
     };
-
 
     return (
         <Container className="py-4" style={{ backgroundColor: "#f7f7f7" }}>
             <Row>
                 {displayedLists.map(list => (
                     <Col key={list.id} className="mb-3 mx-auto" style={{ maxWidth: '650px' }}>
-                        <ListCard list={list} onListDeleted={onListDeleted} onTaskMoved={handleTaskMoved} />
+                        <ListCard 
+                            list={list} 
+                            onListDeleted={onListDeleted} 
+                            onTaskMoved={updateListWithTask} 
+                            selectedListId={selectedListId}
+                        />
                     </Col>
                 ))}
             </Row>

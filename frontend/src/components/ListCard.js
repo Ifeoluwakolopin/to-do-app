@@ -5,10 +5,10 @@ import ListActions from './ListActions';
 import Title from './Title';
 import { useApi } from '../contexts/ApiProvider';
 
-export default function ListCard({ list, onListDeleted }) {
-
+export default function ListCard({ list ={}, onListDeleted, onTaskMoved }) {
     // Only include items without a parentId (i.e., top-level tasks)
-    const topLevelTasks = list.items.filter(item => !item.parentId);
+    const filteredItems = list?.items?.filter(item => item !== undefined) || [];
+    const topLevelTasks = filteredItems.filter(item => !item.parent_id);
 
     // Then, use this filtered list to set your items state
     const [items, setItems] = useState(topLevelTasks);
@@ -23,6 +23,30 @@ export default function ListCard({ list, onListDeleted }) {
         } catch (error) {
             console.error("Error updating title:", error);
             throw error; // Rethrow the error
+        }
+    };
+
+    const handleTaskMoved = (movedTaskId, targetListId) => {
+        const moveRecursive = (tasks, taskId) => {
+            // Try finding task directly in the current list
+            const updatedTasks = tasks.filter(task => task.id !== taskId);
+            
+            // If no task was removed (because it wasn't found at this level), try looking in children
+            if (updatedTasks.length === tasks.length) {
+                return tasks.map(task => ({
+                    ...task,
+                    children: task.children ? moveRecursive(task.children, taskId) : []
+                }));
+            }
+            
+            return updatedTasks;
+        };
+        
+        // Assuming the parent maintains a tasks/items state:
+        setItems(prevItems => moveRecursive(prevItems, movedTaskId));
+    
+        if (onTaskMoved) {
+            onTaskMoved(movedTaskId, targetListId);
         }
     };
 
@@ -120,13 +144,14 @@ export default function ListCard({ list, onListDeleted }) {
                 </Row>
             </Card.Header>
             <ListGroup variant="flush" className="p-3">
-                {items.map((item, index) => (
+                {items.map((item) => (
                     <TaskComponent 
                         key={item.id} 
                         item={item} 
                         listId={list.id}
                         onTaskAdded={handleTaskAdded}
-                        onTaskDeleted={handleTaskDeleted} 
+                        onTaskDeleted={handleTaskDeleted}
+                        onTaskMoved={handleTaskMoved}
                         onCompletionToggle={handleTaskCompletionToggle} 
                     />
 

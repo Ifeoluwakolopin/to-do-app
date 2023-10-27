@@ -33,7 +33,6 @@ export default function MoveTaskButton({ taskId, currentListId, onTaskMoved }) {
             const response = await fetchRequest(`/move_item/${taskId}`, 'PUT', { new_list_id : targetListId });
             if (response.status === 200) {
                 onTaskMoved(taskId, targetListId);
-                console.log('Task moved successfully');
                 setShowModal(false);
             } else {
                 console.error('Failed to move task:', response.data.message);
