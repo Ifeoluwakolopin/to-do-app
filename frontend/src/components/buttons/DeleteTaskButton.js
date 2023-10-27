@@ -36,9 +36,11 @@ export default function DeleteTaskButton({ itemId, parentId, onTaskDeleted }) {
                 variant="link" 
                 className={`btn-sm p-0 text-decoration-none ${deleteConfirmation ? "text-danger" : ""}`} 
                 onClick={handleDeleteTaskClick}
-                onMouseLeave={() => setDeleteConfirmation(false)}
+                onMouseLeave={() => setDeleteConfirmation(false)
+                }
+                style={{ backgroundColor: 'transparent', borderColor: 'transparent' }}
             >
-                <BsTrash color="#0056b3" />
+                <BsTrash className="icon-trash" color={deleteConfirmation ? "red" : "#0056b3"} />
             </Button>
         </OverlayTrigger>
     );
