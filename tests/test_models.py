@@ -42,6 +42,7 @@ class TestTodoItem(BaseTestCase):
             "depth": 1,
             "list_id": 1,
             "parent_id": None,
+            "is_complete": False,  # Add this line
             "children": [
                 {
                     "id": self.item2.id,
@@ -49,6 +50,7 @@ class TestTodoItem(BaseTestCase):
                     "depth": 2,
                     "list_id": 1,
                     "parent_id": self.item1.id,
+                    "is_complete": False,  # Add this line
                     "children": [
                         {
                             "id": self.item3.id,
@@ -56,6 +58,7 @@ class TestTodoItem(BaseTestCase):
                             "depth": 3,
                             "list_id": 1,
                             "parent_id": self.item2.id,
+                            "is_complete": False,  # Add this line
                             "children": [],
                         }
                     ],
@@ -63,7 +66,7 @@ class TestTodoItem(BaseTestCase):
             ],
         }
 
-        self.assertEqual(self.item1.serialize(), expected)
+        self.assertEqual(self.item1.serialize_with_children(), expected)
 
     def test_can_have_children(self):
         self.assertTrue(self.item1.can_have_children())
@@ -78,3 +81,41 @@ class TestTodoItem(BaseTestCase):
         self.assertEqual(child.parent_id, self.item1.id)
         self.assertEqual(child.depth, self.item1.depth + 1)
         self.assertIn(child, self.item1.children)
+
+        def test_mark_complete(self):
+            # Marking a parent complete should complete all children
+            self.item1.mark_complete()
+            self.assertTrue(self.item1.is_complete)
+            self.assertTrue(self.item2.is_complete)
+            self.assertTrue(self.item3.is_complete)
+
+            # Unmarking a child should not affect the parent's completion status
+            self.item3.is_complete = False
+            self.assertTrue(self.item1.is_complete)
+
+    def test_move_item(self):
+        new_list = TodoList(title="New List")
+        db.session.add(new_list)
+        db.session.commit()
+
+        self.item1.move(new_list.id)
+        self.assertEqual(self.item1.list_id, new_list.id)
+        self.assertEqual(self.item2.list_id, new_list.id)
+        self.assertEqual(self.item3.list_id, new_list.id)
+
+
+class TestTodoList(BaseTestCase):
+    def setUp(self):
+        super().setUp()
+        self.list1 = TodoList(title="Shopping")
+        db.session.add(self.list1)
+        db.session.commit()
+
+    def test_serialize(self):
+        # Ensure that a list serializes correctly
+        expected = {
+            "id": self.list1.id,
+            "title": "Shopping",
+            "items": [],  # Initially, the list has no items
+        }
+        self.assertEqual(self.list1.serialize(), expected)

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Container, Row, Col, Button } from 'react-bootstrap';
 import ListCard from '../components/ListCard';
 
@@ -34,13 +34,7 @@ export default function ListCardArea({ lists, selectedListId, onSelectList, onLi
         ? lists.filter(list => list.id === selectedListId)
         : lists.slice(currentPage * itemsPerPage, (currentPage + 1) * itemsPerPage);
 
-    const hasPreviousPage = selectedListId
-        ? lists.findIndex(list => list.id === selectedListId) > 0
-        : currentPage > 0;
-        
-    const hasNextPage = selectedListId
-        ? lists.findIndex(list => list.id === selectedListId) < lists.length - 1
-        : (currentPage + 1) * itemsPerPage < lists.length;
+    const currentIndex = lists.findIndex(list => list.id === selectedListId);
 
     return (
         <Container className="py-4" style={{ backgroundColor: "#f7f7f7" }}>
@@ -51,14 +45,14 @@ export default function ListCardArea({ lists, selectedListId, onSelectList, onLi
                     </Col>
                 ))}
             </Row>
-            {(hasPreviousPage || hasNextPage) && (
+            {(lists.length > itemsPerPage || selectedListId) && (
                 <Row className="justify-content-center mt-3">
                     <Col xs="auto">
                         <Button 
                             variant="outline-primary" 
                             className="mr-2" 
                             onClick={handlePrevious}
-                            disabled={!hasPreviousPage}
+                            disabled={selectedListId ? currentIndex <= 0 : currentPage <= 0}
                         >
                             Previous
                         </Button>
@@ -67,7 +61,7 @@ export default function ListCardArea({ lists, selectedListId, onSelectList, onLi
                         <Button 
                             variant="outline-primary" 
                             onClick={handleNext}
-                            disabled={!hasNextPage}
+                            disabled={selectedListId ? currentIndex >= lists.length - 1 : (currentPage + 1) * itemsPerPage >= lists.length}
                         >
                             Next
                         </Button>

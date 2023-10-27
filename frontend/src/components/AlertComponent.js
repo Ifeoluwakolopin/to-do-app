@@ -20,7 +20,7 @@ export default function AlertComponent({ variant = 'success', message, show, onC
 
     return (
         show &&
-        <Container className={`mb-4 ${small ? 'p-1' : ''}`}>
+        <Container className={`mb-2 ${small ? 'p-1' : ''}`}>
             <Alert 
                 variant={variant} 
                 onClose={onClose} 
