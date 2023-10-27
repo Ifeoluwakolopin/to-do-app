@@ -55,6 +55,7 @@ export default function AddTask({ listId, parentId, onTaskAdded }) {
                 variant={alertVariant}
                 message={alertMessage}
                 onClose={() => setAlertShow(false)}
+                small
             />
 
             <Form onSubmit={handleAddTask}>

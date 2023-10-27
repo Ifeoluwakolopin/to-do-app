@@ -1,8 +1,7 @@
 import React from 'react';
 import { useApi } from '../../contexts/ApiProvider';
 import { OverlayTrigger, Tooltip, Button } from 'react-bootstrap';
-import { BsCheckCircle } from 'react-icons/bs';
-
+import { BsCheckSquare, BsSquare } from 'react-icons/bs'; // Importing the square icons
 
 export default function CompleteTaskButton({ isComplete, onCompletionToggle, itemId }) {
     const { fetchRequest } = useApi();
@@ -29,9 +28,9 @@ export default function CompleteTaskButton({ isComplete, onCompletionToggle, ite
                 onClick={handleTaskCompletion}
             >
                 {isComplete ? (
-                    <BsCheckCircle size={16} color="#0056b3" style={{ textDecoration: "line-through" }} />
+                    <BsCheckSquare size={16} color="#0056b3" style={{ textDecoration: "line-through" }} />
                 ) : (
-                    <BsCheckCircle size={16} color="#0056b3" style={{ opacity: 0.3 }} />
+                    <BsSquare size={16} color="#0056b3" style={{ opacity: 0.3 }} />
                 )}
             </Button>
         </OverlayTrigger>

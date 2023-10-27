@@ -1,7 +1,7 @@
 import { Alert, Container } from 'react-bootstrap';
 import { useEffect } from 'react';
 
-export default function AlertComponent({ variant = 'success', message, show, onClose }) {
+export default function AlertComponent({ variant = 'success', message, show, onClose, small }) {
     
     useEffect(() => {
         let timer;
@@ -20,8 +20,13 @@ export default function AlertComponent({ variant = 'success', message, show, onC
 
     return (
         show &&
-        <Container className="mb-4">
-            <Alert variant={variant} onClose={onClose} dismissible>
+        <Container className={`mb-4 ${small ? 'p-1' : ''}`}>
+            <Alert 
+                variant={variant} 
+                onClose={onClose} 
+                dismissible 
+                className={`${small ? 'small' : ''}`}
+            >
                 {message}
             </Alert>
         </Container>
