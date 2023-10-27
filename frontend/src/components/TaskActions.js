@@ -39,7 +39,10 @@ export default function TaskActions({
 
             <CompleteTaskButton 
                 isComplete={isComplete}
-                onCompletionToggle={onCompletionToggle}
+                onCompletionToggle={(itemId, status) => {
+                    console.log("CompleteTaskButton's onCompletionToggle called");
+                    onCompletionToggle(itemId, status);
+                }}
                 itemId={itemId}
                 className="mr-3"  
             />

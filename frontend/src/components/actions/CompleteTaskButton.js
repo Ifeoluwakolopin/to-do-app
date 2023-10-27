@@ -25,7 +25,13 @@ export default function CompleteTaskButton({ isComplete, onCompletionToggle, ite
             <Button 
                 variant="link" 
                 className="btn-sm p-0 text-decoration-none mr-3" 
-                onClick={handleTaskCompletion}
+                onClick={ () => {
+                    // Call the backend to change completion status
+                    handleTaskCompletion();
+                    // Notify parent of the change
+                    const newStatus = !isComplete;
+                    onCompletionToggle(itemId, newStatus);
+                }}
             >
                 {isComplete ? (
                     <BsCheckSquare size={16} color="#0056b3" style={{ textDecoration: "line-through" }} />
@@ -33,6 +39,7 @@ export default function CompleteTaskButton({ isComplete, onCompletionToggle, ite
                     <BsSquare size={16} color="#0056b3" style={{ opacity: 0.3 }} />
                 )}
             </Button>
+
         </OverlayTrigger>
     );
 }

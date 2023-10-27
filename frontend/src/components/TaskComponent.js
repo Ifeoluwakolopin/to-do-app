@@ -59,60 +59,51 @@ export default function TaskComponent({
             children: singleItem.children ? markChildrenComplete(singleItem.children) : []
         }));
     };
-
+    
     const handleItemCompletionToggle = (itemId, status) => {
+        console.log("Toggling item completion:", itemId, status);
     
         const toggleRecursive = (items, itemId, status) => {
-            let allSiblingsComplete = true;  // Assuming initially
-    
-            const updatedItems = items.map(singleItem => {
+            return items.map(singleItem => {
                 if (singleItem.id === itemId) {
-                    // If marking as complete
-                    if (status) {
-                        return {
-                            ...singleItem,
-                            is_complete: true,
-                            children: markChildrenComplete(singleItem.children || [])
-                        };
-                    }
-                    return { ...singleItem, is_complete: false };
-                } else {
-                    // Check if any sibling is not complete
-                    if (!singleItem.is_complete) {
-                        allSiblingsComplete = false;
-                    }
+                    return {
+                        ...singleItem,
+                        is_complete: status,
+                        children: status ? markChildrenComplete(singleItem.children || []) : singleItem.children
+                    };
                 }
-    
                 return {
                     ...singleItem,
                     children: singleItem.children ? toggleRecursive(singleItem.children, itemId, status) : singleItem.children
                 };
             });
-    
-            // If all siblings are complete and the current item is also marked as complete
-            if (allSiblingsComplete && status) {
-                for (let i = 0; i < updatedItems.length; i++) {
-                    if (updatedItems[i].id !== itemId && !updatedItems[i].is_complete) {
-                        allSiblingsComplete = false;
-                        break;
-                    }
-                }
-                if (allSiblingsComplete) {
-                    return updatedItems.map(singleItem => ({ ...singleItem, is_complete: true }));
-                }
-            }
-    
-            return updatedItems;
         };
     
         const newItems = toggleRecursive(items, itemId, status);
         setItems(newItems);
     
+        // Check if root item
         if (itemId === item.id) {
             setIsComplete(status);
         }
+    
+        // If it's a subtask, check siblings and parent status
+        if (parentId) {
+            checkAndToggleParentStatus(itemId, status, newItems);
+        }
     };
-
+    
+    const checkAndToggleParentStatus = (itemId, itemStatus, itemsList) => {
+        const siblingStatus = itemsList.filter(singleItem => singleItem.id !== itemId).every(singleItem => singleItem.is_complete);
+        const allSiblingsComplete = siblingStatus && itemStatus;
+        
+        if (allSiblingsComplete) {
+            onCompletionToggle(parentId, true);
+        } else {
+            onCompletionToggle(parentId, false);
+        }
+    };
+    
 
     const handleSaveTitle = async (newTitle, endpoint) => {
         try {
@@ -155,9 +146,12 @@ export default function TaskComponent({
                                 parentId={parentId}  
                                 onTaskDeleted={onTaskDeleted} 
                                 onTaskAdded={(newSubitem) => onTaskAdded(newSubitem, item.id)}
-                                isComplete={item.is_complete}
+                                isComplete={isComplete}
                                 onCompletionToggle={(itemId, status) => {
-                                    onCompletionToggle(itemId, status);
+                                    handleItemCompletionToggle(itemId, status); // Handle current task's status first
+                                    if (onCompletionToggle) {
+                                        onCompletionToggle(itemId, status);  // Propagate the change to parent, if needed
+                                    }
                                 }}
                                 onTaskMoved={onTaskMoved}
                             />
@@ -176,7 +170,7 @@ export default function TaskComponent({
                 </Card.Body>
                 {showSubtasks && item.children && item.children.length > 0 && (
                     <div className="ml-4">
-                        {item.children.map((child, index) => (
+                        {item.children.map((child) => (
                             <TaskComponent 
                                 key={child.id}
                                 item={child}
