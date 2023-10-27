@@ -10,7 +10,7 @@ export default function Footer() {
         <Container fluid className="bg-dark text-white py-1 mt-1 mb-0">
             <Row className="justify-content-center">
                 <Col md={6} className="text-center">
-                    <p>&copy; {currentYear} IfeoluwakolopinAre. All Rights Reserved.</p>
+                    <p>&copy; {currentYear} Ifeoluwakolopin Are. All Rights Reserved.</p>
                 </Col>
             </Row>
         </Container>
