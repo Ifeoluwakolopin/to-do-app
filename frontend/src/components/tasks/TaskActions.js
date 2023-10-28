@@ -16,6 +16,15 @@ export default function TaskActions({
     onTaskMoved
 }) {
 
+    const handleTaskAddedHelper = (newTask) => {
+        console.log("Task was added in TaskActions:", newTask); // Log the added task for verification
+
+        // Bubble up the event to ListCard
+        if (onTaskAdded) {
+            onTaskAdded(newTask);
+        }
+    };
+
     const handleTaskMoved = (taskId, targetListId) => {
         // Bubble up the event
         if (onTaskMoved) {
@@ -29,7 +38,7 @@ export default function TaskActions({
                 <AddTaskButton 
                     listId={listId}
                     itemId={itemId}
-                    onTaskAdded={onTaskAdded}
+                    onTaskAdded={handleTaskAddedHelper}
                     className="mr-3"  // Added spacing
                 />
             )}

@@ -6,7 +6,7 @@ import TaskActions from './TaskActions';
 import { useApi } from '../../contexts/ApiProvider';
 import CompleteTaskButton from '../buttons/CompleteTaskButton';
 
-export default function TaskComponent({ 
+export default function TaskComponent({
     item, 
     listId, 
     onTaskAdded, 
@@ -20,6 +20,7 @@ export default function TaskComponent({
     const { fetchRequest } = useApi();
     const [items, setItems] = useState(item.children || []);
     const [isComplete, setIsComplete] = useState(item.is_complete);
+
 
     const handleItemMove = (movedItemId, targetListId) => {
         const moveRecursive = (items, itemId) => {
@@ -37,20 +38,6 @@ export default function TaskComponent({
     
         setItems(prevItems => moveRecursive(prevItems, movedItemId));
         onTaskMoved(movedItemId, targetListId);  // Propagate the itemId and targetListId to parent
-    };    
-
-    const handleItemAdded = (newItem, parentId) => {
-        if (parentId === item.id) {
-            setItems(prevItems => [...prevItems, newItem]);
-        } else {
-            setItems(prevItems => 
-                prevItems.map(singleItem => 
-                    singleItem.id === parentId 
-                        ? { ...singleItem, children: [...singleItem.children, newItem] }
-                        : singleItem
-                )
-            );
-        }
     };
 
     const handleItemDelete = (deletedItemId) => {
@@ -153,7 +140,7 @@ export default function TaskComponent({
     return (
         <div>
             <Card 
-                className={`mb-2 mx-1 shadow-sm ${isHovered ? "hovered-card" : ""}`} 
+                className={`mb-2 mx-1 shadow-sm border-secondary`}
                 onMouseEnter={() => setIsHovered(true)}
                 onMouseLeave={() => setIsHovered(false)}
             >
@@ -203,10 +190,9 @@ export default function TaskComponent({
                     <div className="ml-4">
                         {item.children.map((child) => (
                             <TaskComponent 
-                                key={child.id}
                                 item={child}
                                 listId={listId} 
-                                onTaskAdded={handleItemAdded}
+                                onTaskAdded={onTaskAdded}
                                 onTaskDeleted={handleItemDelete}
                                 parentId={item.id}
                                 onCompletionToggle={handleItemCompletionToggle}
