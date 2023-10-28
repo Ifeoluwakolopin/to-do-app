@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { Card, ListGroup, Row, Col } from 'react-bootstrap';
-import TaskComponent from '../components/TaskComponent';
+import TaskComponent from '../tasks/TaskComponent';
 import ListActions from './ListActions';
-import Title from './Title';
-import { useApi } from '../contexts/ApiProvider';
+import Title from '../Title';
+import { useApi } from '../../contexts/ApiProvider';
 
 export default function ListCard({ list ={}, onListDeleted, onTaskMoved }) {
     // Only include items without a parentId (i.e., top-level tasks)

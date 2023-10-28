@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import AddList from '../components/AddList';
-import ListCardArea from '../components/ListCardArea';
+import ListCardArea from '../components/tasklists/ListCardArea';
 import Sidebar from '../components/Sidebar';
 import { useApi } from '../contexts/ApiProvider';
 import { Container, Row, Col } from 'react-bootstrap';
@@ -12,6 +12,11 @@ export default function HomePage() {
     const [selectedListId, setSelectedListId] = useState(null);
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const { fetchRequest } = useApi();
+
+    const handleDeselectList = () => {
+        setSelectedListId(null);
+        setDisplayedLists(lists);
+    };
 
     
     useEffect(() => {
@@ -107,11 +112,13 @@ export default function HomePage() {
             <Row>
                 {isSidebarOpen && (
                     <Col md={3} className="border-right">
-                        <Sidebar 
-                            lists={lists} 
-                            onSelectList={handleSelectList} 
-                            onClose={() => setIsSidebarOpen(false)} 
-                        />
+                    <Sidebar 
+                        lists={lists} 
+                        onSelectList={handleSelectList} 
+                        onDeselectList={handleDeselectList}  // pass the function here
+                        onClose={() => setIsSidebarOpen(false)} 
+                    />
+
                     </Col>
                 )}
                 <Col md={isSidebarOpen ? 9 : 12}>

@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { Card, Button } from 'react-bootstrap';
 import { BsChevronDown, BsChevronUp } from 'react-icons/bs';
-import Title from './Title';
+import Title from '../Title';
 import TaskActions from './TaskActions';
-import { useApi } from '../contexts/ApiProvider';
+import { useApi } from '../../contexts/ApiProvider';
 
 export default function TaskComponent({ 
     item, 
