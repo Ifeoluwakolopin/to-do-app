@@ -25,8 +25,19 @@ To run the Hierarchical To-Do List App, follow these steps:
 ### 2. **Starting the Application**:
 - Navigate to the root directory of the project (`to-do app/`).
 - Execute the command `python app.py`. This command will check for an active virtual environment named `.venv` or create one if it doesn't exist, then install the required packages for Flask and React, and finally initialize both the Flask backend and the React frontend.
+- *Watch the terminal to make sure that the script completes successfully, and respond to any of its prompts. You might need to hit enter at some point.*
 - Wait for the startup logs to confirm that both services are running successfully.
 - Open your browser and navigate to the address shown in the logs (`http://127.0.0.1:3000/`) to access the application.
+
+### Script Not working?
+
+If the script doesn't work, you can manually start the application by following these steps:
+
+- Create and Activate your virtual environment.
+- Install the dependencies for the backend by running `pip install -r backend/requirements.txt`.
+- Install the dependencies for the frontend by running `npm install` from the `frontend/` directory.
+- Start the backend by running `python run.py` from the root level.
+- Start the frontend by running `npm start` from the `frontend/` directory.
 
 ### 3. **Stopping the Application**:
 - To stop the application, simply go to the terminal where the app is running and press `Ctrl+C`. Note: You might need to manually stop the React frontend process in certain cases.
