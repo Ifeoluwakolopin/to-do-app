@@ -4,7 +4,7 @@
 The Hierarchical To-Do List App allows users to create, manage, and organize tasks in a structured manner. Users can create lists and tasks. While lists can contain tasks, tasks can further contain sub-tasks up to a depth of 3, making it perfect for complex projects that require a layered breakdown of tasks.
 
 ## How to use
-Watch this [![demo](https://loom.com/embed/54f94cb551f74f5ba96676df36a948d0)](https://www.loom.com/share/54f94cb551f74f5ba96676df36a948d0?sid=bd890f00-86dc-4a03-9c4f-edf64416ffb8) on how to use the app: 
+Watch this [demo](https://loom.com/embed/54f94cb551f74f5ba96676df36a948d0) on how to use the app: 
 
 https://github.com/Ifeoluwakolopin/to-do-app/assets/60819380/d4b1226d-6a18-4109-a9dc-d5872d3c7bdd
 
