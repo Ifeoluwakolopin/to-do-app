@@ -4,6 +4,7 @@ import { BsChevronDown, BsChevronUp } from 'react-icons/bs';
 import Title from '../Title';
 import TaskActions from './TaskActions';
 import { useApi } from '../../contexts/ApiProvider';
+import CompleteTaskButton from '../buttons/CompleteTaskButton';
 
 export default function TaskComponent({ 
     item, 
@@ -157,6 +158,17 @@ export default function TaskComponent({
                 onMouseLeave={() => setIsHovered(false)}
             >
                 <Card.Body className="d-flex justify-content-between align-items-center py-2">
+                    <CompleteTaskButton
+                            isComplete={isComplete}
+                                onCompletionToggle={(itemId, status) => {
+                                    console.log("Toggling item completion:", itemId, status)
+                                    handleItemCompletionToggle(itemId, status); // Handle current task's status first
+                                    if (onCompletionToggle) {
+                                        onCompletionToggle(itemId, status);  // Propagate the change to parent, if needed
+                                    }
+                                }}
+                            itemId={item.id}
+                        />
                     <Title
                         initialTitle={item.content}
                         onSave={(newTitle) => handleSaveTitle(newTitle, `/items/${item.id}`)}
@@ -171,13 +183,6 @@ export default function TaskComponent({
                                 parentId={parentId}  
                                 onTaskDeleted={onTaskDeleted} 
                                 onTaskAdded={(newSubitem) => onTaskAdded(newSubitem, item.id)}
-                                isComplete={isComplete}
-                                onCompletionToggle={(itemId, status) => {
-                                    handleItemCompletionToggle(itemId, status); // Handle current task's status first
-                                    if (onCompletionToggle) {
-                                        onCompletionToggle(itemId, status);  // Propagate the change to parent, if needed
-                                    }
-                                }}
                                 onTaskMoved={onTaskMoved}
 
                             />
