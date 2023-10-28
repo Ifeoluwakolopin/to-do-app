@@ -1,11 +1,6 @@
 import subprocess
 import os
 
-from backend import create_app
-from backend.models import TodoList
-
-app = create_app()
-
 
 def install_dependencies():
     """Install necessary dependencies for Flask and React."""
@@ -28,5 +23,10 @@ def start_frontend():
 
 if __name__ == "__main__":
     install_dependencies()  # Install all dependencies first
+
+    from backend import create_app
+    from backend.models import TodoList
+
+    app = create_app()
     start_frontend()  # Start the React frontend
     app.run(host="127.0.0.1", port=5000, debug=True)

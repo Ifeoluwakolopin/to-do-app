@@ -3,7 +3,6 @@ import { Container } from 'react-bootstrap';
 
 // Import the button components
 import AddTaskButton from '../buttons/AddTaskButton';
-import CompleteTaskButton from '../buttons/CompleteTaskButton';
 import DeleteTaskButton from '../buttons/DeleteTaskButton';
 import MoveTaskButton from '../buttons/MoveTaskButton';
 
@@ -13,9 +12,7 @@ export default function TaskActions({
     parentId = null, 
     depth, 
     onTaskAdded, 
-    onTaskDeleted, 
-    isComplete, 
-    onCompletionToggle,
+    onTaskDeleted,
     onTaskMoved
 }) {
 
@@ -36,16 +33,6 @@ export default function TaskActions({
                     className="mr-3"  // Added spacing
                 />
             )}
-
-            <CompleteTaskButton 
-                isComplete={isComplete}
-                onCompletionToggle={(itemId, status) => {
-                    console.log("CompleteTaskButton's onCompletionToggle called");
-                    onCompletionToggle(itemId, status);
-                }}
-                itemId={itemId}
-                className="mr-3"  
-            />
 
             <MoveTaskButton 
                 taskId={itemId}
