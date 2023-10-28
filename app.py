@@ -21,21 +21,31 @@ def is_venv_active():
     return venv_path and os.path.basename(venv_path) == ".venv"
 
 
-def create_and_activate_virtualenv():
-    """Create a new virtual environment called '.venv' and activate it."""
+def activate_virtualenv():
+    """Activate the virtual environment named '.venv'."""
     venv_path = os.path.join(os.getcwd(), ".venv")
-    python_cmd, _ = get_python_and_pip()
-
-    if not os.path.exists(venv_path):
-        print("Creating a new virtual environment named '.venv'.")
-        subprocess.run(python_cmd + ["-m", "venv", venv_path])
 
     if os.name == "nt":  # Windows
         print("Activating the virtual environment for Windows.")
-        subprocess.run([".\.venv\Scripts\activate"], shell=True)
+        return subprocess.run([".\.venv\Scripts\activate"], shell=True).returncode == 0
     else:  # macOS, Linux, etc.
         print("Activating the virtual environment.")
-        os.system(f"source {venv_path}/bin/activate")
+        return os.system(f"source {venv_path}/bin/activate") == 0
+
+
+def create_and_activate_virtualenv():
+    """Try to activate an existing '.venv' or create a new one if activation fails."""
+    if not activate_virtualenv():
+        print("Failed to activate '.venv', creating a new one...")
+        venv_path = os.path.join(os.getcwd(), ".venv")
+        python_cmd, _ = get_python_and_pip()
+
+        if not os.path.exists(venv_path):
+            print("Creating a new virtual environment named '.venv'.")
+            subprocess.run(python_cmd + ["-m", "venv", venv_path])
+
+        # Try activating again after creating
+        activate_virtualenv()
 
 
 def install_dependencies():
