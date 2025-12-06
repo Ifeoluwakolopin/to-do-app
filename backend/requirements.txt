@@ -12,6 +12,6 @@ PyJWT==2.8.0
 python-dateutil==2.9.0.post0
 python-dotenv==1.0.0
 six==1.16.0
-SQLAlchemy==2.0.22
+SQLAlchemy==2.0.44
 typing_extensions==4.8.0
 Werkzeug==2.3.0
