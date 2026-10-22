@@ -1,6 +1,6 @@
 import React from 'react';
 import { Container, Button } from 'react-bootstrap';
-import { useSpring, animated } from 'react-spring';
+import { useSpring, animated } from '@react-spring/web';
 import { useNavigate } from 'react-router-dom';
 
 export default function LandingPage() {
