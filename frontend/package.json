@@ -21,6 +21,10 @@
     "serve": "^14.2.1",
     "web-vitals": "^2.1.4"
   },
+  "devDependencies": {
+    "typescript": "~4.9.5",
+    "yaml": "^2.9.1"
+  },
   "scripts": {
     "start": "HOST=127.0.0.1 node scripts/start.cjs",
     "build": "react-scripts build",
