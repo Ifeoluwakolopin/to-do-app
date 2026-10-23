@@ -2,16 +2,16 @@
 
 ## Dependency maintenance
 
-Use Python 3.11 and Node 22.15+ (22 LTS in CI); restore the frontend with
-`cd frontend && npm ci`. The app remains React 18/Create React App with its
-original start/build/test/eject commands, routes, drag-and-drop and animations.
-Scoped CRA overrides update the SVG loader, CSS minimizer, source-map URL
-loader and optional Workbox plugin within the existing webpack configuration.
-`npm start` retains its loopback binding and delegates to CRA through a small
-webpack-dev-server 5 adapter preserving HTTPS, source maps, custom proxy setup,
-SPA fallback and no-op service-worker middleware. Host checks default to `auto`
-and development assets no longer advertise wildcard CORS; the explicit legacy
-`DANGEROUSLY_DISABLE_HOST_CHECK` escape hatch remains.
+Use Python 3.11 and Node 22.22.2+ within Node 22 LTS (also used in CI).
+Restore with `cd frontend && npm ci`. The owner-approved tooling migration
+uses Vite 8, Vitest 5 and ESLint 9, retaining React 18, routes, drag-and-drop,
+animations, credentialed API calls and the existing UI.
+`npm start` retains loopback port 3000 and fast refresh. `npm run build`
+checks lint errors and emits the existing `build/` layout and source maps.
+`npm test` watches the existing app smoke, now checking the actual signed-out
+landing page; `npm test -- --run --coverage` runs it once with coverage.
+`npm run eject` explains that configuration is already checked in.
+See [frontend commands and configuration](frontend/README.md).
 The Flask refresh retains session authentication, SQLAlchemy schemas and
 three-level task hierarchy; Flask-Login 0.6.3 is needed for Werkzeug 3.
 The landing page's `useSpring` and `animated.img` now import the maintained
@@ -21,15 +21,12 @@ implementation is retained without installing the unrelated native/Three
 peer environments, which require incompatible React 19 versions when resolved
 today. No native or Three application entry points exist in this browser app.
 
-Compatibility CI runs the existing model checks and an isolated SQLite
-auth/CRUD smoke, without production databases. Frontend builds retain CRA's
-local warning behavior (`CI=false`), not a claim that the old template test
-passes. Audit all frontend dependencies, including development tools. Remaining
-upstream advisories, including unpatched braces,
-are not dismissed or certified safe. Replacing
-the build/test framework requires a separately reviewed compatibility plan.
-Patched webpack-dev-server removes node-forge through its maintained
-certificate generator, and NYC's compatible YAML 4 loader removes sprintf-js.
+Hosted compatibility CI retains the existing model checks and isolated SQLite
+auth/CRUD smoke, without production databases. It audits complete npm and
+installed Python trees, runs the existing app test, lint/build and isolated
+HTTP/HTTPS, assets, SPA, HMR, host and build-configuration smokes.
+The migration removes unpatched braces ownership paths rather than dismissing
+alerts or forcing incompatible overrides.
 
 ## Description
 The Hierarchical To-Do List App allows users to create, manage, and organize tasks in a structured manner. Users can create lists and tasks. While lists can contain tasks, tasks can further contain sub-tasks up to a depth of 3, making it perfect for complex projects that require a layered breakdown of tasks.
